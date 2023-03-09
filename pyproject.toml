@@ -46,5 +46,9 @@ push            = false
 "pyproject.toml" = ['version = "{version}"', 'current_version = "{version}"']
 "src/p3droslo/__init__.py" = ["{version}"]
 
+[tool.pytest.ini_options]
+addopts = ["--import-mode=importlib"]
+pythonpath = [".", "src"]
+
 #[project.scripts]
 #realpython = "reader.__main__:main"

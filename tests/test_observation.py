@@ -1,4 +1,4 @@
-from p3droslo import Observation
+from p3droslo.observation import Observation
 
 
 def test_constructor():
