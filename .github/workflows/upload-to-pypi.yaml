@@ -40,7 +40,7 @@ jobs:
         
   build:
     needs: deploy
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
