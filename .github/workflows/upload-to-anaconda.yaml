@@ -22,6 +22,12 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: ["3.7", "3.8", "3.9", "3.10"]
+        
+    # Do not ignore bash profile files. From:
+    # https://github.com/marketplace/actions/setup-miniconda
+    defaults:
+      run:
+        shell: bash -l {0}
 
     steps:
       - uses: conda-incubator/setup-miniconda@v2
