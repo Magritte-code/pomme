@@ -40,7 +40,7 @@ jobs:
       
       - name: Install dependencies
         run: |
-          conda create -n p3droslo python==${{ matric.python-version }} pytest>=7
+          conda create -n p3droslo python==${{ matrix.python-version }} pytest>=7
           conda activate p3droslo
       - name: Install p3droslo from Anaconda.org
         run: |
