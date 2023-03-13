@@ -9,15 +9,15 @@ _Probabilistic 3D Reconstruction of Spectral Line Observations._
 
 ## Installation
 
-Get the latest `p3droslo` release either from [PyPI](https://pypi.org/project/p3droslo/) with:
+Get the latest `p3droslo` release either from [PyPI](https://pypi.org/project/p3droslo/), using `pip`, with:
 ```
 pip install p3droslo
 ```
-or from [Anaconda](https://anaconda.org/FredDeCeuster/p3droslo) with:
+or from [Anaconda](https://anaconda.org/FredDeCeuster/p3droslo), using `conda`, with:
 ```
 conda install -c freddeceuster p3droslo 
 ```
-or download the [source code](https://github.com/Magritte-code/p3droslo/archive/refs/heads/main.zip) and install by executing:
+or download the [source code](https://github.com/Magritte-code/p3droslo/archive/refs/heads/main.zip), unzip, and install with `pip` by executing:
 ```
 pip install .
 ```
