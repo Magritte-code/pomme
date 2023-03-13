@@ -14,7 +14,7 @@ Get the latest `p3droslo` release either from [PyPI](https://pypi.org/project/p3
 ```
 pip install p3droslo
 ```
-or from [Anaconda](https://anaconda.org/FredDeCeuster/p3droslo), using `conda`, with:
+or from [Anaconda.org](https://anaconda.org/FredDeCeuster/p3droslo), using `conda`, with:
 ```
 conda install -c freddeceuster p3droslo 
 ```
