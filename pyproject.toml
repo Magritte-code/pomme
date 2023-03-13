@@ -36,7 +36,7 @@ dev = ["black", "bumpver", "pip-tools", "pytest"]
 Homepage = "https://github.com/Magritte-code/p3droslo"
 
 [tool.bumpver]
-current_version = "0.0.5"
+current_version = "0.0.4"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message  = "Bump version {old_version} -> {new_version}"
 commit          = true
@@ -47,6 +47,7 @@ push            = false
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "src/p3droslo/__init__.py" = ["{version}"]
 "conda/meta.yaml" = ['version: "{version}"']
+"README.md" = ['(version "{version}")']
 
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib"]
