@@ -5,7 +5,7 @@ on:
     types: [published]
     
 jobs:
-  publish:
+  deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -14,3 +14,28 @@ jobs:
       with:
         subDir: 'conda'
         AnacondaToken: ${{ secrets.ANACONDA_TOKEN }}
+        
+  build:
+    needs: deploy
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest>=7
+      - name: Install p3droslo
+        run: |
+          pip install p3droslo
+      - name: Test with pytest
+        run: |
+          pytest
