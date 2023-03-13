@@ -5,6 +5,7 @@ _Probabilistic 3D Reconstruction of Spectral Line Observations._
 
 ![Build status](https://github.com/Magritte-code/p3droslo/actions/workflows/build-and-test.yaml/badge.svg)
 ![Build status](https://github.com/Magritte-code/p3droslo/actions/workflows/upload-to-pypi.yaml/badge.svg)
+![Build status](https://github.com/Magritte-code/p3droslo/actions/workflows/upload-to-anaconda.yaml/badge.svg)
 
 
 ## Installation
