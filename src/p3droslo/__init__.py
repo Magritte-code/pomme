@@ -1,2 +1,2 @@
 # Version number of this package (p3droslo)
-__version__ = "0.0.4"
+__version__ = "0.0.5"
