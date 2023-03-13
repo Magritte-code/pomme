@@ -45,6 +45,7 @@ push            = false
 [tool.bumpver.file_patterns]
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "src/p3droslo/__init__.py" = ["{version}"]
+"conda/meta.yaml" = ['version: "{version}"']
 
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib"]
