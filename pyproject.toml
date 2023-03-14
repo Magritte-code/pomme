@@ -40,14 +40,14 @@ current_version = "0.0.7"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message  = "Bump version {old_version} -> {new_version}"
 commit          = true
-tag             = true
+tag             = false
 push            = false
 
 [tool.bumpver.file_patterns]
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "src/p3droslo/__init__.py" = ["{version}"]
 "conda/meta.yaml" = ['version: "{version}"']
-"README.md" = ['version "{version}"']
+"README.md" = ['(version {version})']
 
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib"]
