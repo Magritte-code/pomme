@@ -34,21 +34,16 @@ jobs:
         with:
           miniconda-version: "latest"
           channels: bioconda, conda-forge, defaults
-          use-only-tar-bz2: true  # IMPORTANT: This needs to be set for caching to work properly!
+          use-only-tar-bz2: true
           auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
       
       - name: Install dependencies
         run: |
-          conda create -n p3droslo python==${{ matrix.python-version }} pytest>=7
-          conda env list
-          conda activate p3droslo
-          conda env list
+          conda install pytest>=7
       - name: Install p3droslo from Anaconda.org
         run: |
-          conda env list
-          conda activate p3droslo
           conda install -c freddeceuster p3droslo
       - name: Test with pytest
         run: |
-          conda activate p3droslo
           pytest
