@@ -48,6 +48,7 @@ push            = false
 "src/p3droslo/__init__.py" = ["{version}"]
 "conda/meta.yaml" = ['version: "{version}"']
 "README.md" = ['(version {version})']
+"docs/index.rst" = ['(version {version})']
 
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib"]
