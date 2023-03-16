@@ -32,11 +32,11 @@ master_doc = 'index'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
-    "sphinx.ext.napoleon"
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.napoleon',
     'sphinx_copybutton',
-    'nbsphinx'
+    'nbsphinx',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -66,6 +66,6 @@ html_static_path = ['_static']
 
 # -- Sphinx Python API docs --------------------------------------------------
 
-autodoc_member_order = "groupwise"
-autodoc_default_flags = ["members"]
+autodoc_member_order = 'groupwise'
+autodoc_default_flags = ['members']
 autosummary_generate = True
