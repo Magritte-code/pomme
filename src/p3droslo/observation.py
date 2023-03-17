@@ -36,6 +36,9 @@ class DataCube():
             # Extract header
             self.hdr = hdu[0].header                       
 
+            # Extract the object name
+            self.object = str(self.hdr['OBJECT']).strip()
+            
             # Extract units for intensities
             self.I_unit = units.Unit(self.hdr['BUNIT'])
             

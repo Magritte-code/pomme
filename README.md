@@ -23,3 +23,8 @@ or download the [source code](https://github.com/Magritte-code/p3droslo/archive/
 pip install .
 ```
 in the root directory of the code.
+
+
+## Acknowledgements
+
+FDC is a Postdoctoral Research Fellow of the [Research Foundation - Flanders (FWO)](https://www.fwo.be/en/), grant number 1253223N, and was previously supported for this research by a Postdoctoral Mandate (PDM) from [KU Leuven](https://www.kuleuven.be/english/kuleuven/index.html), grant number PDMT2/21/066.
