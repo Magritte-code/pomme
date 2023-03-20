@@ -60,30 +60,8 @@ class LineData():
             self.lower      -= 1
             
             # Derive Einstein B coefficients
-            self.Einstein_B_s = self.Einstein_A * CC**2 / (2.0*HH*(self.frequency)**3)
-            self.Einstein_B_a = self.weight[self.upper] / self.weight[self.lower] * self.Einstein_B_s
+            self.Einstein_Bs = self.Einstein_A * CC**2 / (2.0*HH*(self.frequency)**3)
+            self.Einstein_Ba = self.weight[self.upper] / self.weight[self.lower] * self.Einstein_Bs
             
         else:
             raise NotImplementedError("Currently, only LAMDA data files are supported.")
-            
-            
-    def pops_LTE (self, temperature):
-        '''
-        Returns the LTE level populations give a temperature.
-    
-        Parameters
-        ----------
-        temperature : float
-            Temperature for which to evaluate the LTE level populations.
-    
-        Returns
-        -------
-        out : array_like
-            Array containing the LTE level populations for the given temperature.
-        '''
-        # Compute LTE pops
-        pop = self.weight * np.exp(-self.energy/(KB*temperature))
-        # Normalize to relative populations
-        pop /= np.sum(pop)
-        # Return result
-        return pop

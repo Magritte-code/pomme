@@ -24,8 +24,10 @@ dependencies = [
     "astroquery",
     "ipywidgets",
     "astropy",
+    "torch",
     "numpy",
     "numba",
+    "tqdm",
 ]
 requires-python = ">=3.7"
 

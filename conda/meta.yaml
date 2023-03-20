@@ -23,6 +23,8 @@ requirements:
     - matplotlib
     - astroquery
     - ipywidgets
+    - pytorch
     - astropy
     - numpy
     - numba
+    - tqdm
