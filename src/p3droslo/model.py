@@ -15,7 +15,7 @@ class TensorModel():
         # Set shape of Tensor variables. 
         self.box_shape = box_shape
         # Initialise variables with random Tensor with appropriate shape 
-        self.vars = {v:torch.rand(self.box_shape, requires_grad=True) for v in var_keys}
+        self.vars = {v:torch.rand(self.box_shape, requires_grad=True, dtype=torch.float64) for v in var_keys}
         
     def __getitem__(self, var_key):
         """

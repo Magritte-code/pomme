@@ -24,7 +24,7 @@ dependencies = [
     "astroquery",
     "ipywidgets",
     "astropy",
-    "torch",
+    "torch>=2.0.0",
     "numpy",
     "numba",
     "tqdm",
