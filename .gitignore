@@ -1,5 +1,8 @@
 *.hdf5
+*.h5
 *.npy
+*.fits
+*.FITS
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
