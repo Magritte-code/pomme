@@ -28,6 +28,7 @@ dependencies = [
     "numpy",
     "numba",
     "tqdm",
+    "h5py",
 ]
 requires-python = ">=3.7"
 

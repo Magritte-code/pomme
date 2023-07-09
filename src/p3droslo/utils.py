@@ -1,6 +1,42 @@
-from astropy  import units
-from torch.nn import functional
+import torch
+import numpy             as np
+import matplotlib.pyplot as plt
 
+from astropy    import units, constants
+from torch.nn   import functional
+from ipywidgets import interact
+
+
+def planck (temperature, frequency):
+    '''
+    Planck function for thermal radiation.
+
+    Parameters
+    ----------
+    temperature : float
+        Temperature at which to evaluate the intensity.
+    frequency : float
+        Frequency at which to evaluate the intensity.
+
+    Returns
+    -------
+    out : float
+        Planck function evaluated at the frequency for the given temperature.
+    '''
+    # Specify constants
+    h  = constants.h  .si.value
+    c  = constants.c  .si.value
+    kb = constants.k_B.si.value
+    # Return planck function
+    return 2.0*h/c**2 * np.power(frequency,3) / np.expm1(h*frequency/(kb*temperature))
+
+
+def print_var(name, var):
+    """
+    Print the min, mean, and max of a tensor.
+    """
+    print(f"{name} {var.min().item():+1.2e} {var.mean().item():+1.2e} {var.max().item():+1.2e}")
+    
 
 def interpolate(inp, size, mode='nearest'):
     """

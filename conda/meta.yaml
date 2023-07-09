@@ -28,3 +28,4 @@ requirements:
     - numpy
     - numba
     - tqdm
+    - h5py
