@@ -136,6 +136,22 @@ class Line:
         # Return the gaussian line profile
         return result
 
+
+    def optical_depth(self, chi, temperature, v_turbulence, freq):
+        """
+        Line optical depth along the last spatial axis.
+        """
+
+        # Compute dpv
+        inverse_width = 1.0 / self.gaussian_width(temperature=temperature, v_turbulence=v_turbulence)
+        dpv           = torch.einsum("..., ...f -> ...f", inverse_width, freq-self.frequency)
+
+        tau = torch.empty_like(dpv)
+        tau[...,  0 , :] = 0.0
+        tau[..., +1:, :] = torch.cumsum(compute_tau(chi, dpv), dim=2)
+
+        return tau
+
     
     def LTE_pops (self, temperature):
         """
@@ -157,7 +173,34 @@ class Line:
         # Return result
         return pop
     
+
+    def opacity_without_profile(self, pop, density):
+        """
+        Line opacity, not folded with the profile.
+        
+        Parameters
+        ----------
+        temperature : torch.Tensor
+            Temperature for which to evaluate the LTE level populations.
     
+        Returns
+        -------
+        eta, chi : torch.Tensor, torch.Tensor
+            Tensor containing the LTE emissivities and opacities for the given temperature.
+        """
+        # Compute the prefactor
+        factor = HH * self.frequency / (4.0 * np.pi)
+        
+        # Compute the opacity
+        chi = factor * (self.Einstein_Ba * pop[self.lower] - self.Einstein_Bs * pop[self.upper]) 
+        
+        # Fold the opacities with the number density
+        chi *= density
+        
+        # Return results
+        return chi
+    
+
     def LTE_emissivity_and_opacity(self, density, temperature, v_turbulence, frequencies):
         """
         Line emissivity and opacity assuming LTE.
