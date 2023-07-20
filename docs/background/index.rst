@@ -1,7 +1,7 @@
 Background
 ##########
 
-Some background about the algorithms and their numerical implementations that are used in p3droslo.
+Some background on the physics of spectral line observations, the probabilistic reconstruction algorithms, and their numerical implementations in p3droslo.
 
 .. toctree::
    :maxdepth: 2
