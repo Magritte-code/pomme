@@ -41,9 +41,12 @@ Acknowledgements
 
 FDC is a Postdoctoral Research Fellow of the `Research Foundation - Flanders (FWO) <https://www.fwo.be/en/>`_, grant number 1253223N, and was previously supported for this research by a Postdoctoral Mandate (PDM) from `KU Leuven <https://www.kuleuven.be/english/kuleuven/index.html>`_, grant number PDMT2/21/066.
 
+
+|
+
 .. image:: images/KU_Leuven_logo.png
   :width: 30%
   :alt: KU Leuven logo
-.. imega:: images/FWO_logo.jpeg
+.. image:: images/FWO_logo.jpeg
   :width: 60%
   :alt: FWO logo
