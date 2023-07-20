@@ -25,10 +25,8 @@ def plot_spectrum(cube):
     ymax = cube.max().item()
     def plot(i,j):
         plt.figure(dpi=150)
-        plt.step(self.fs, self.img[:,i,j])
+        plt.step(cube[i,j,:])
         plt.ylim((ymin, ymax))
 
     # Return an interactive ipywidget
-    return interact(plot,
-                    i=(0, cube.shape[0]-1),
-                    j=(0, cube.shape[1]-1) )
+    return interact(plot, i=(0, cube.shape[0]-1), j=(0, cube.shape[1]-1))
