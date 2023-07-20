@@ -158,7 +158,7 @@ class Line:
         return pop
     
 
-    def opacity_without_profile(self, pop, density):
+    def opacity_ij(self, pop):
         """
         Line opacity, not folded with the profile.
         
@@ -177,9 +177,6 @@ class Line:
         
         # Compute the opacity
         chi = factor * (self.Einstein_Ba * pop[self.lower] - self.Einstein_Bs * pop[self.upper]) 
-        
-        # Fold the opacities with the number density
-        chi *= density
         
         # Return results
         return chi
