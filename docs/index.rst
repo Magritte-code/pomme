@@ -4,6 +4,14 @@ p3droslo
 Welcome to the p3droslo documentation! p3droslo is a software library for probabilistic 3D reconstruction of astronomical spectral line observations.
 
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Contents:
+
+   background/index
+   API/index
+
+
 Installation
 ************
 
@@ -28,24 +36,16 @@ or download the `source code <https://github.com/Magritte-code/p3droslo/archive/
 in the root directory of the code.
 
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Contents:
-
-   background/index
-   API/index
-
-
 Acknowledgements
 ****************
 
 FDC is a Postdoctoral Research Fellow of the `Research Foundation - Flanders (FWO) <https://www.fwo.be/en/>`_, grant number 1253223N, and was previously supported for this research by a Postdoctoral Mandate (PDM) from `KU Leuven <https://www.kuleuven.be/english/kuleuven/index.html>`_, grant number PDMT2/21/066.
 
-.. image:: images/KU_leuven_logo.png
-  :height: 75
+.. image:: images/KU_Leuven_logo.png
+  :height: 72
   :width: 45%
   :alt: KU Leuven logo
 .. image:: images/FWO_logo.jpeg
-  :height: 75
+  :height: 72
   :width: 45%
   :alt: FWO logo
