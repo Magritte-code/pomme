@@ -46,7 +46,9 @@ FDC is a Postdoctoral Research Fellow of the `Research Foundation - Flanders (FW
 
 .. image:: images/KU_Leuven_logo.png
   :width: 30%
+  :align: left
   :alt: KU Leuven logo
-.. image:: images/FWO_logo.jpeg
-  :width: 60%
+.. image:: images/FWO_logo.png
+  :width: 50%
+  :align: right
   :alt: FWO logo
