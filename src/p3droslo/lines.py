@@ -135,23 +135,7 @@ class Line:
         result = torch.einsum("..., ...f -> ...f", factor * inverse_width, torch.exp(-shift**2))
         # Return the gaussian line profile
         return result
-
-
-    def optical_depth(self, chi, temperature, v_turbulence, freq):
-        """
-        Line optical depth along the last spatial axis.
-        """
-
-        # Compute dpv
-        inverse_width = 1.0 / self.gaussian_width(temperature=temperature, v_turbulence=v_turbulence)
-        dpv           = torch.einsum("..., ...f -> ...f", inverse_width, freq-self.frequency)
-
-        tau = torch.empty_like(dpv)
-        tau[...,  0 , :] = 0.0
-        tau[..., +1:, :] = torch.cumsum(compute_tau(chi, dpv), dim=2)
-
-        return tau
-
+    
     
     def LTE_pops (self, temperature):
         """
