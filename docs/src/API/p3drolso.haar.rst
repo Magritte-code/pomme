@@ -1,7 +1,7 @@
 p3drolso.haar module
 ====================
 
-.. automodule:: p3drolso.haar
+.. automodule:: p3droslo.haar
    :members:
    :undoc-members:
    :show-inheritance:
