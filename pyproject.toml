@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "p3droslo"
-version = "0.0.10"
+version = "0.0.11"
 description = "Probabilistic 3D Reconstruction of Specrtral Line Observations."
 readme = "README.md"
 authors = [{ name = "Frederik De Ceuster", email = "frederik.deceuster@gmail.com" }]
@@ -39,7 +39,7 @@ dev = ["black", "bumpver", "pip-tools", "pytest"]
 Homepage = "https://github.com/Magritte-code/p3droslo"
 
 [tool.bumpver]
-current_version = "0.0.10"
+current_version = "0.0.11"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message  = "Bump version {old_version} -> {new_version}"
 commit          = true
