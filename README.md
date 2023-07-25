@@ -10,7 +10,7 @@ _Probabilistic 3D Reconstruction of Spectral Line Observations._
 
 ## Installation
 
-Get the latest release (version 0.0.9) either from [PyPI](https://pypi.org/project/p3droslo/), using `pip`, with:
+Get the latest release (version 0.0.10) either from [PyPI](https://pypi.org/project/p3droslo/), using `pip`, with:
 ```
 pip install p3droslo
 ```
