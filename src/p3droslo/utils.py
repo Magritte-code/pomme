@@ -7,7 +7,7 @@ from torch.nn   import functional
 from ipywidgets import interact
 
 
-def planck (temperature, frequency):
+def planck(temperature, frequency):
     '''
     Planck function for thermal radiation.
 
@@ -28,7 +28,7 @@ def planck (temperature, frequency):
     c  = constants.c  .si.value
     kb = constants.k_B.si.value
     # Return planck function
-    return 2.0*h/c**2 * np.power(frequency,3) / np.expm1(h*frequency/(kb*temperature))
+    return 2.0*h/c**2 * np.power(frequency, 3) / np.expm1(h*frequency/(kb*temperature))
 
 
 def print_var(name, var):
@@ -36,7 +36,7 @@ def print_var(name, var):
     Print the min, mean, and max of a tensor.
     """
     print(f"{name} {var.min().item():+1.2e} {var.mean().item():+1.2e} {var.max().item():+1.2e}")
-    
+
 
 def interpolate(inp, size, mode='nearest'):
     """
@@ -49,8 +49,8 @@ def interpolate(inp, size, mode='nearest'):
     res = functional.interpolate(res, size=size, mode=mode)
     # Return without batch ids and channels
     return res.view(size)
-        
-        
+
+
 @units.quantity_input(angle='angle', distance='length')
 def convert_angular_to_spatial(angle, distance):
     """

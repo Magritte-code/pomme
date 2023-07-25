@@ -1,4 +1,4 @@
-p3drolso.haar module
+p3droslo.haar module
 ====================
 
 .. automodule:: p3droslo.haar

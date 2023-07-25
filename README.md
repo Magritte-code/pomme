@@ -25,6 +25,22 @@ pip install .
 in the root directory of the code.
 
 
+## Documentation
+
+Documentation with examples can be found at [p3droslo.readthedocs.io](https://p3droslo.readthedocs.io/en/latest/).
+
+
+## Issues
+
+Please report any issues with this software or its documentation [here](https://github.com/Magritte-code/p3droslo/issues).
+
+
+## Contributing or Collaborating
+
+We are open to any contributions to or scientific collaborations regarding p3droslo.
+More detailed information can be found [here](https://github.com/Magritte-code/p3droslo/blob/main/CONTRIBUTING.md)
+
+
 ## Acknowledgements
 
-FDC is a Postdoctoral Research Fellow of the [Research Foundation - Flanders (FWO)](https://www.fwo.be/en/), grant number 1253223N, and was previously supported for this research by a Postdoctoral Mandate (PDM) from [KU Leuven](https://www.kuleuven.be/english/kuleuven/index.html), grant number PDMT2/21/066.
+Frederik De Ceuster is a Postdoctoral Research Fellow of the [Research Foundation - Flanders (FWO)](https://www.fwo.be/en/), grant number 1253223N, and was previously supported for this research by a Postdoctoral Mandate (PDM) from [KU Leuven](https://www.kuleuven.be/english/kuleuven/index.html), grant number PDMT2/21/066.
