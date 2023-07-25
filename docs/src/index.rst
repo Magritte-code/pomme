@@ -16,7 +16,7 @@ Welcome to the p3droslo documentation! p3droslo is a software library for probab
 Installation
 ************
 
-Get the latest release (version 0.0.8) either from `PyPI <https://pypi.org/project/p3droslo/>`_, using pip, with:
+Get the latest release (version 0.0.9) either from `PyPI <https://pypi.org/project/p3droslo/>`_, using pip, with:
 
 .. code-block:: shell
 
