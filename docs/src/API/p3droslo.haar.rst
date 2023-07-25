@@ -1,5 +1,5 @@
-p3droslo.haar module
-====================
+p3droslo.haar
+=============
 
 .. automodule:: p3droslo.haar
    :members:

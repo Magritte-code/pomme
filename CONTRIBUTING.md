@@ -7,7 +7,7 @@ In case you have any suggestions, questions, possible bugs, or feature requests,
 
 ## Contributing examples and use cases
 
-If you have used p3droslo in a way that is different from any of [our examples](https://p3droslo.readthedocs.io/en/main/examples/index.html), we highly encourage you to contribute to the [examples](https://p3droslo.readthedocs.io/en/main/examples/index.html) in the documentation.
+If you have used p3droslo in a way that is different from any of our [examples](https://p3droslo.readthedocs.io/en/latest/examples/index.html), we highly encourage you to contribute to the [examples](https://p3droslo.readthedocs.io/en/latest/examples/index.html) in the documentation.
 You can do this by preparing your example as a jupyter notebook and creating a pull request (see below). If you are unsure about your example or how to add it, please contact us and we can help.
 
 

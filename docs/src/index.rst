@@ -37,6 +37,24 @@ or download the `source code <https://github.com/Magritte-code/p3droslo/archive/
 in the root directory of the code.
 
 
+Issues
+******
+
+Please report any issues with this software or its documentation `here <https://github.com/Magritte-code/p3droslo/issues>`_.
+
+
+Contributing
+************
+
+We are open to contributions to p3droslo. More information can be found `here <https://github.com/Magritte-code/p3droslo/blob/main/CONTRIBUTING.md>`_.
+
+
+Collaborating
+*************
+
+We are always interested in collaborating on exciting projects! So, if you have a project (or just an idea for a project), or data that might benefit from (probabilistic) 3D reconstruction or any part of the methodology you can find in this repository, please contact `me <https://freddeceuster.github.io>`_.
+
+
 Acknowledgements
 ****************
 

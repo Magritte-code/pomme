@@ -1,5 +1,5 @@
-p3droslo.loss module
-====================
+p3droslo.loss
+=============
 
 .. automodule:: p3droslo.loss
    :members:

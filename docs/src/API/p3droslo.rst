@@ -1,5 +1,5 @@
-p3droslo package
-================
+p3droslo
+========
 
 .. automodule:: p3droslo
    :members:

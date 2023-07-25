@@ -1,5 +1,5 @@
-p3droslo.object module
-======================
+p3droslo.object
+===============
 
 .. automodule:: p3droslo.object
    :members:

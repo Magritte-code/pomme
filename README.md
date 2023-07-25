@@ -35,10 +35,14 @@ Documentation with examples can be found at [p3droslo.readthedocs.io](https://p3
 Please report any issues with this software or its documentation [here](https://github.com/Magritte-code/p3droslo/issues).
 
 
-## Contributing or Collaborating
+## Contributing
 
-We are open to any contributions to or scientific collaborations regarding p3droslo.
-More information can be found [here](https://github.com/Magritte-code/p3droslo/blob/main/CONTRIBUTING.md)
+We are open to contributions to p3droslo. More information can be found [here](https://github.com/Magritte-code/p3droslo/blob/main/CONTRIBUTING.md).
+
+
+## Collaborating
+
+We are always interested in collaborating on exciting projects! So, if you have a project (or just an idea for a project), or data that might benefit from (probabilistic) 3D reconstruction or any part of the methodology you can find in this repository, please contact [me](https://freddeceuster.github.io).
 
 
 ## Acknowledgements

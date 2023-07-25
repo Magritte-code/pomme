@@ -1,5 +1,5 @@
-p3droslo.reconstruction module
-==============================
+p3droslo.reconstruction
+=======================
 
 .. automodule:: p3droslo.reconstruction
    :members:

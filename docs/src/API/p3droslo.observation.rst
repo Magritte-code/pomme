@@ -1,5 +1,5 @@
-p3droslo.observation module
-===========================
+p3droslo.observation
+====================
 
 .. automodule:: p3droslo.observation
    :members:

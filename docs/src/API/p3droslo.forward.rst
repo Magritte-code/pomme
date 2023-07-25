@@ -1,5 +1,5 @@
-p3droslo.forward module
-=======================
+p3droslo.forward
+================
 
 .. automodule:: p3droslo.forward
    :members:
