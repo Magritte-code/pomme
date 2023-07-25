@@ -38,7 +38,7 @@ Please report any issues with this software or its documentation [here](https://
 ## Contributing or Collaborating
 
 We are open to any contributions to or scientific collaborations regarding p3droslo.
-More detailed information can be found [here](https://github.com/Magritte-code/p3droslo/blob/main/CONTRIBUTING.md)
+More information can be found [here](https://github.com/Magritte-code/p3droslo/blob/main/CONTRIBUTING.md)
 
 
 ## Acknowledgements

@@ -19,7 +19,7 @@ year = datetime.datetime.now().year
 # -- Project information -----------------------------------------------------
 
 project = 'p3droslo'
-copyright = f'{year}, Frederik De Ceuster'
+copyright = f'2022-{year}, Frederik De Ceuster'
 author = 'Frederik De Ceuster'
 
 # -- Explicitly specify master doc -------------------------------------------

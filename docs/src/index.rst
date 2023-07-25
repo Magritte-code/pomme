@@ -9,6 +9,7 @@ Welcome to the p3droslo documentation! p3droslo is a software library for probab
    :caption: Contents:
 
    background/index
+   examples/index
    API/index
 
 
