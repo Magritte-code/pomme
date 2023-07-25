@@ -5,6 +5,7 @@ from time             import time
 from astroquery.lamda import Lamda, parse_lamda_datafile
 from astropy          import constants
 from p3droslo.utils   import get_molar_mass, print_var
+from p3droslo.forward import image_along_last_axis as forward_image_along_last_axis
 
 
 # Constants
@@ -164,8 +165,8 @@ class Line:
         
         Parameters
         ----------
-        temperature : torch.Tensor
-            Temperature for which to evaluate the LTE level populations.
+        pop : torch.Tensor
+            level populations
     
         Returns
         -------
@@ -181,6 +182,24 @@ class Line:
         
         # Return results
         return eta, chi
+
+
+    def source_ij(self, pop):
+        """
+        Line source function
+
+        Parameters
+        ----------
+        pop : torch.Tensor
+            level populations
+    
+        Returns
+        -------
+        src : torch.Tensor
+            Tensor containing the line source function (= emissivity / opacity).
+        """
+        return self.Einstein_A  * pop[self.upper] / (self.Einstein_Ba * pop[self.lower] - self.Einstein_Bs * pop[self.upper]) 
+
     
 
     def LTE_emissivity_and_opacity(self, density, temperature, v_turbulence, frequencies):
@@ -231,7 +250,7 @@ class Line:
         return (eta, chi)
     
 
-    def optical_depth(self, chi_ij, density, temperature, v_turbulence, velocity_los, frequencies, dx):
+    def optical_depth_along_last_axis(self, chi_ij, density, temperature, v_turbulence, velocity_los, frequencies, dx):
         """
         Line optical depth along the last axis.
         """
@@ -270,6 +289,7 @@ class Line:
         B = torch.Tensor(torch.abs(b10) <= shift_threshold)
 
         dtau = torch.empty_like(b10)
+        
         dtau[A]  =           (      a1[A] -       a0[A]) * (torch.exp(-b0[A]**2) - torch.exp(-b1[A]**2))
         dtau[A] += sqrt_pi * (b0[A]*a1[A] - b1[A]*a0[A]) * (torch.erf( b0[A]   ) - torch.erf( b1[A]   ))
         dtau[A] *= 0.5 / b10[A]**2
@@ -279,9 +299,57 @@ class Line:
         dtau[B] +=  (1.0/12.0) * (a0[B] + 3.0*a1[B]) *         (2.0*b0[B]**2 - 1.0) * b10[B]**2
         dtau[B] -=  (1.0/30.0) * (a0[B] + 4.0*a1[B]) * b0[B] * (2.0*b0[B]**2 - 3.0) * b10[B]**3
         dtau[B] *= torch.exp(-b0[B]**2)
+        
+        dtau *= dx
 
         tau = torch.empty_like(b)
         tau[...,  0 , :] = 0.0
-        tau[..., +1:, :] = torch.cumsum(dtau, dim=last_axis) * dx
+        tau[..., +1:, :] = torch.cumsum(dtau, dim=last_axis)
 
         return dtau, tau
+    
+
+    def image_along_last_axis(self, pop, density, temperature, v_turbulence, velocity_los, frequencies, dx):
+        """
+        Create an image along the last data axis
+        """
+
+        eta_ij, chi_ij = self.emissivity_and_opacity_ij(pop=pop)
+
+        src = torch.einsum("..., f -> ...f", eta_ij/chi_ij, torch.ones_like(frequencies))
+
+        dtau, tau = self.optical_depth_along_last_axis(
+            chi_ij       = chi_ij,
+            density      = density,
+            temperature  = temperature,
+            v_turbulence = v_turbulence,
+            velocity_los = velocity_los,
+            frequencies  = frequencies,
+            dx           = dx
+        )
+
+        img = forward_image_along_last_axis(src, dtau, tau)
+
+        return img
+
+
+    def LTE_image_along_last_axis(self, density, temperature, v_turbulence, velocity_los, frequencies, dx):
+        """
+        Create an image along the last data axis, assuming LTE level populations
+        """
+
+        pop = self.LTE_pops(
+            temperature = temperature
+        )
+
+        img = self.image_along_last_axis(
+            pop          = pop,
+            density      = density,
+            temperature  = temperature,
+            v_turbulence = v_turbulence,
+            velocity_los = velocity_los,
+            frequencies  = frequencies,
+            dx           = dx
+        )
+
+        return img
