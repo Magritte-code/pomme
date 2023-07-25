@@ -8,18 +8,15 @@ about:
   license_file: LICENSE
   summary: Probabilistic 3D Reconstruction of Spectral Line Observations.
 
-source:
-  path: ../
-
 requirements:
   build:
-    - python
+    - python={{ python_version }}
     - setuptools
     - wheel
     - pip
 
   run:
-    - python
+    - python={{ python_version }}
     - matplotlib
     - astroquery
     - ipywidgets
@@ -29,3 +26,9 @@ requirements:
     - numba
     - tqdm
     - h5py
+
+source:
+  path: ../
+
+build:
+  noarch: python

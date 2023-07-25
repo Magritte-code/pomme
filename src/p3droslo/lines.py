@@ -3,7 +3,7 @@ import numpy as np
 
 from time             import time
 from astroquery.lamda import Lamda, parse_lamda_datafile
-from astropy          import constants
+from astropy          import constants, units
 from p3droslo.utils   import get_molar_mass, print_var
 from p3droslo.forward import image_along_last_axis as forward_image_along_last_axis
 
@@ -353,3 +353,10 @@ class Line:
         )
 
         return img
+
+
+    def freq_to_velo(self, freq, unit='m/s'):
+        """
+        Convert frequencies with respect to this line to velocities.
+        """
+        return (freq / self.frequency - 1.0) * constants.c.to(unit).value
