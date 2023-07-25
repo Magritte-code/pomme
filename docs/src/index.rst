@@ -52,7 +52,7 @@ We are open to contributions to p3droslo. More information can be found `here <h
 Collaborating
 *************
 
-We are always interested in collaborating on exciting projects! So, if you have a project (or just an idea for a project), or data that might benefit from (probabilistic) 3D reconstruction or any part of the methodology you can find in this repository, please contact `me <https://freddeceuster.github.io>`_.
+We are always interested in collaborating on exciting projects! So, if you have a project or just an idea, or data that might benefit from probabilistic 3D reconstruction or any other thing you can find in this repository, please contact `me <https://freddeceuster.github.io>`_.
 
 
 Acknowledgements
