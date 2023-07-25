@@ -29,6 +29,3 @@ requirements:
 
 source:
   path: ../
-
-build:
-  noarch: python

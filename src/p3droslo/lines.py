@@ -359,4 +359,4 @@ class Line:
         """
         Convert frequencies with respect to this line to velocities.
         """
-        return (freq / self.frequency - 1.0) * constants.c.to(unit).value
+        return (freq / (self.frequency * units.Hz) - 1.0) * constants.c.to(unit).value
