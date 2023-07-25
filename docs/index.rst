@@ -1,7 +1,7 @@
 p3droslo
 ########
 
-Welcome to the p3droslo documentation! p3droslo is a software library for probabilistic 3D reconstruction of astronomical spectral line observations.
+Welcome to the p3droslo documentation! p3droslo is a software library for probabilistic 3D reconstruction of astronomical spectral line observations, developed by `Frederik De Ceuster <https://freddeceuster.github.io>`_.
 
 
 .. toctree::

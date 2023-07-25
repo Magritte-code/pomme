@@ -4,7 +4,7 @@ import numpy as np
 from time             import time
 from astroquery.lamda import Lamda, parse_lamda_datafile
 from astropy          import constants
-from p3droslo.utils   import get_molar_mass
+from p3droslo.utils   import get_molar_mass, print_var
 
 
 # Constants
@@ -110,7 +110,7 @@ class Line:
         print(f"    {'Frequency '       :<17} {self.frequency :0.9e}  Hz")
         print(f"    {'Einstein A coeff ':<17} {self.Einstein_A:0.9e}  1/s")
         print(f"    {'Molar mass'       :<17} {self.species_molar_mass:<15}  g/mol")
-        
+
         
     def gaussian_width(self, temperature, v_turbulence):
         """
@@ -158,7 +158,7 @@ class Line:
         return pop
     
 
-    def opacity_ij(self, pop):
+    def emissivity_and_opacity_ij(self, pop):
         """
         Line opacity, not folded with the profile.
         
@@ -175,11 +175,12 @@ class Line:
         # Compute the prefactor
         factor = HH * self.frequency / (4.0 * np.pi)
         
-        # Compute the opacity
+        # Compute the emissivity and opacity
+        eta = factor *  self.Einstein_A  * pop[self.upper]
         chi = factor * (self.Einstein_Ba * pop[self.lower] - self.Einstein_Bs * pop[self.upper]) 
         
         # Return results
-        return chi
+        return eta, chi
     
 
     def LTE_emissivity_and_opacity(self, density, temperature, v_turbulence, frequencies):
@@ -228,3 +229,59 @@ class Line:
         
         # Return results
         return (eta, chi)
+    
+
+    def optical_depth(self, chi_ij, density, temperature, v_turbulence, velocity_los, frequencies, dx):
+        """
+        Line optical depth along the last axis.
+        """
+        sqrt_pi = np.sqrt(np.pi)
+
+        # Compute inverse line width
+        inverse_width = 1.0 / self.gaussian_width(temperature=temperature, v_turbulence=v_turbulence)
+  
+        # Get the index of the last spatial axis
+        last_axis = density.dim() - 1
+
+        # Compute the Doppler shift for each element
+        shift = 1.0 + velocity_los * (1.0 / CC)
+
+        # Create freqency tensor in the rest frame for each element
+        freqs_restframe = torch.einsum("..., f -> ...f", shift, frequencies)
+
+        # Define the a and b (tabulated) functions
+        a = (1.0/sqrt_pi) * inverse_width * chi_ij * density
+        a = torch.einsum("...,    f -> ...f", a, torch.ones_like(frequencies))
+        b = torch.einsum("..., ...f -> ...f", inverse_width, freqs_restframe - self.frequency)
+
+        a0 = a[..., :-1, :]
+        a1 = a[..., 1: , :]
+    
+        b0 = b[..., :-1, :]
+        b1 = b[..., 1: , :]
+
+        b10 = b1 - b0
+
+        # threashhold differentiating the two regimes (large and small Doppler shift)
+        shift_threshold = 1.0e-3
+    
+        # Define the masks for the threashold    
+        A = torch.Tensor(torch.abs(b10) >  shift_threshold)
+        B = torch.Tensor(torch.abs(b10) <= shift_threshold)
+
+        dtau = torch.empty_like(b10)
+        dtau[A]  =           (      a1[A] -       a0[A]) * (torch.exp(-b0[A]**2) - torch.exp(-b1[A]**2))
+        dtau[A] += sqrt_pi * (b0[A]*a1[A] - b1[A]*a0[A]) * (torch.erf( b0[A]   ) - torch.erf( b1[A]   ))
+        dtau[A] *= 0.5 / b10[A]**2
+
+        dtau[B]  =  (1.0/ 2.0) * (a0[B] +     a1[B])
+        dtau[B] -=  (1.0/ 3.0) * (a0[B] + 2.0*a1[B]) * b0[B]                        * b10[B]   
+        dtau[B] +=  (1.0/12.0) * (a0[B] + 3.0*a1[B]) *         (2.0*b0[B]**2 - 1.0) * b10[B]**2
+        dtau[B] -=  (1.0/30.0) * (a0[B] + 4.0*a1[B]) * b0[B] * (2.0*b0[B]**2 - 3.0) * b10[B]**3
+        dtau[B] *= torch.exp(-b0[B]**2)
+
+        tau = torch.empty_like(b)
+        tau[...,  0 , :] = 0.0
+        tau[..., +1:, :] = torch.cumsum(dtau, dim=last_axis) * dx
+
+        return dtau, tau
