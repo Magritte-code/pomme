@@ -86,8 +86,7 @@ jobs:
           mamba install pytest>=7
           mamba install -c freddeceuster p3droslo
     
-
-        run: |
+    
       - name: Test with pytest
         run: |
           pytest
