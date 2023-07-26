@@ -294,10 +294,10 @@ class Line:
         dtau[A] += sqrt_pi * (b0[A]*a1[A] - b1[A]*a0[A]) * (torch.erf( b0[A]   ) - torch.erf( b1[A]   ))
         dtau[A] *= 0.5 / b10[A]**2
 
-        dtau[B]  =  (1.0/ 2.0) * (a0[B] +     a1[B])
-        dtau[B] -=  (1.0/ 3.0) * (a0[B] + 2.0*a1[B]) * b0[B]                        * b10[B]   
-        dtau[B] +=  (1.0/12.0) * (a0[B] + 3.0*a1[B]) *         (2.0*b0[B]**2 - 1.0) * b10[B]**2
-        dtau[B] -=  (1.0/30.0) * (a0[B] + 4.0*a1[B]) * b0[B] * (2.0*b0[B]**2 - 3.0) * b10[B]**3
+        dtau[B]  = (1.0/ 2.0) * (a0[B] +     a1[B])
+        dtau[B] -= (1.0/ 3.0) * (a0[B] + 2.0*a1[B]) * b0[B]                        * b10[B]   
+        dtau[B] += (1.0/12.0) * (a0[B] + 3.0*a1[B]) *         (2.0*b0[B]**2 - 1.0) * b10[B]**2
+        dtau[B] -= (1.0/30.0) * (a0[B] + 4.0*a1[B]) * b0[B] * (2.0*b0[B]**2 - 3.0) * b10[B]**3
         dtau[B] *= torch.exp(-b0[B]**2)
         
         dtau *= dx
@@ -307,8 +307,76 @@ class Line:
         tau[..., +1:, :] = torch.cumsum(dtau, dim=last_axis)
 
         return dtau, tau
-    
 
+
+    def optical_depth_along_last_axis2(self, chi_ij, density, temperature, v_turbulence, velocity_los, frequencies, dx):
+        """
+        Line optical depth along the last axis.
+        """
+        sqrt_pi = np.sqrt(np.pi)
+
+        # Compute inverse line width
+        inverse_width = 1.0 / self.gaussian_width(temperature=temperature, v_turbulence=v_turbulence)
+  
+        # Get the index of the last spatial axis
+        last_axis = density.dim() - 1
+
+        # Compute the Doppler shift for each element
+        shift = 1.0 + velocity_los * (1.0 / CC)
+
+        # Create freqency tensor in the rest frame for each element
+        freqs_restframe = torch.einsum("..., f -> ...f", shift, frequencies)
+
+        # Define the a and b (tabulated) functions
+        a = (1.0/sqrt_pi) * inverse_width * chi_ij * density
+        a = torch.einsum("...,    f -> ...f", a, torch.ones_like(frequencies))
+        b = torch.einsum("..., ...f -> ...f", inverse_width, freqs_restframe - self.frequency)
+
+        expb = torch.exp(-b**2) 
+        erfb = torch.erf( b   ) 
+
+        a0 = a[..., :-1, :]
+        a1 = a[..., 1: , :]
+    
+        b0 = b[..., :-1, :]
+        b1 = b[..., 1: , :]
+
+        expb0 = expb[..., :-1, :]
+        expb1 = expb[..., 1: , :]
+        
+        erfb0 = erfb[..., :-1, :]
+        erfb1 = erfb[..., 1: , :]
+
+        b10 = b1 - b0
+
+        # threashhold differentiating the two regimes (large and small Doppler shift)
+        shift_threshold = 1.0e-3
+    
+        # Define the masks for the threashold    
+        A = torch.Tensor(torch.abs(b10) >  shift_threshold)
+        B = torch.Tensor(torch.abs(b10) <= shift_threshold)
+
+        dtau = torch.empty_like(b10)
+        
+        dtau[A]  =           (      a1[A] -       a0[A]) * (expb0[A] - expb1[A])
+        dtau[A] += sqrt_pi * (b0[A]*a1[A] - b1[A]*a0[A]) * (erfb0[A] - erfb1[A])
+        dtau[A] *= 0.5 / b10[A]**2
+
+        dtau[B]  = (1.0/ 2.0) * (a0[B] +     a1[B])
+        dtau[B] -= (1.0/ 3.0) * (a0[B] + 2.0*a1[B]) * b0[B]                        * b10[B]   
+        dtau[B] += (1.0/12.0) * (a0[B] + 3.0*a1[B]) *         (2.0*b0[B]**2 - 1.0) * b10[B]**2
+        dtau[B] -= (1.0/30.0) * (a0[B] + 4.0*a1[B]) * b0[B] * (2.0*b0[B]**2 - 3.0) * b10[B]**3
+        dtau[B] *= expb0[B]
+        
+        dtau *= dx
+
+        tau = torch.empty_like(b)
+        tau[...,  0 , :] = 0.0
+        tau[..., +1:, :] = torch.cumsum(dtau, dim=last_axis)
+
+        return dtau, tau
+
+    
     def image_along_last_axis(self, pop, density, temperature, v_turbulence, velocity_los, frequencies, dx):
         """
         Create an image along the last data axis
