@@ -353,20 +353,30 @@ class Line:
         shift_threshold = 1.0e-3
     
         # Define the masks for the threashold    
-        A = torch.Tensor(torch.abs(b10) >  shift_threshold)
-        B = torch.Tensor(torch.abs(b10) <= shift_threshold)
+        # A = torch.ones_like(b10, dtype=bool) #torch.Tensor(torch.abs(b10) >  shift_threshold)
+        # B = torch.zeros_like(b10, dtype=bool) #torch.Tensor(torch.abs(b10) <= shift_threshold)
 
         dtau = torch.empty_like(b10)
         
-        dtau[A]  =           (      a1[A] -       a0[A]) * (expb0[A] - expb1[A])
-        dtau[A] += sqrt_pi * (b0[A]*a1[A] - b1[A]*a0[A]) * (erfb0[A] - erfb1[A])
-        dtau[A] *= 0.5 / b10[A]**2
+        # dtau[A]  =           (      a1[A] -       a0[A]) * (expb0[A] - expb1[A])
+        # dtau[A] += sqrt_pi * (b0[A]*a1[A] - b1[A]*a0[A]) * (erfb0[A] - erfb1[A])
+        # dtau[A] *= 0.5 / b10[A]**2
+        
+        dtau  =           (   a1 -    a0) * (expb0 - expb1)
+        dtau += sqrt_pi * (b0*a1 - b1*a0) * (erfb0 - erfb1)
+        dtau *= 0.5 / b10**2
 
-        dtau[B]  = (1.0/ 2.0) * (a0[B] +     a1[B])
-        dtau[B] -= (1.0/ 3.0) * (a0[B] + 2.0*a1[B]) * b0[B]                        * b10[B]   
-        dtau[B] += (1.0/12.0) * (a0[B] + 3.0*a1[B]) *         (2.0*b0[B]**2 - 1.0) * b10[B]**2
-        dtau[B] -= (1.0/30.0) * (a0[B] + 4.0*a1[B]) * b0[B] * (2.0*b0[B]**2 - 3.0) * b10[B]**3
-        dtau[B] *= expb0[B]
+        # dtau[B]  = (1.0/ 2.0) * (a0[B] +     a1[B])
+        # dtau[B] -= (1.0/ 3.0) * (a0[B] + 2.0*a1[B]) * b0[B]                        * b10[B]   
+        # dtau[B] += (1.0/12.0) * (a0[B] + 3.0*a1[B]) *         (2.0*b0[B]**2 - 1.0) * b10[B]**2
+        # dtau[B] -= (1.0/30.0) * (a0[B] + 4.0*a1[B]) * b0[B] * (2.0*b0[B]**2 - 3.0) * b10[B]**3
+        # dtau[B] *= expb0[B]
+        
+        # dtau  = (1.0/ 2.0) * (a0 +     a1)
+        # dtau -= (1.0/ 3.0) * (a0 + 2.0*a1) * b0                     * b10   
+        # dtau += (1.0/12.0) * (a0 + 3.0*a1) *      (2.0*b0**2 - 1.0) * b10**2
+        # dtau -= (1.0/30.0) * (a0 + 4.0*a1) * b0 * (2.0*b0**2 - 3.0) * b10**3
+        # dtau *= expb0
         
         dtau *= dx
 

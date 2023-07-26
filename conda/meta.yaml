@@ -20,7 +20,7 @@ requirements:
     - matplotlib
     - astroquery
     - ipywidgets
-    - pytorch
+    - pytorch>=2.0.0
     - astropy
     - numpy
     - numba
