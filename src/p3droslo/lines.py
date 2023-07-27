@@ -250,7 +250,7 @@ class Line:
         return (eta, chi)
     
 
-    def optical_depth_along_last_axis(self, chi_ij, density, temperature, v_turbulence, velocity_los, frequencies, dx):
+    def optical_depth_along_last_axis_slow(self, chi_ij, density, temperature, v_turbulence, velocity_los, frequencies, dx):
         """
         Line optical depth along the last axis.
         """
@@ -309,7 +309,7 @@ class Line:
         return dtau, tau
 
 
-    def optical_depth_along_last_axis2(self, chi_ij, density, temperature, v_turbulence, velocity_los, frequencies, dx):
+    def optical_depth_along_last_axis(self, chi_ij, density, temperature, v_turbulence, velocity_los, frequencies, dx):
         """
         Line optical depth along the last axis.
         """
@@ -327,9 +327,8 @@ class Line:
         # Create freqency tensor in the rest frame for each element
         freqs_restframe = torch.einsum("..., f -> ...f", shift, frequencies)
 
-        # Define the a and b (tabulated) functions
-        a = (1.0/sqrt_pi) * inverse_width * chi_ij * density
-        # a = torch.einsum("...,    f -> ...f", a, torch.ones_like(frequencies))
+        # Define the a and b (tabulated) functions (Note: we absorb dx in the definition of a for efficiency)
+        a = (dx/sqrt_pi) * inverse_width * chi_ij * density
         b = torch.einsum("..., ...f -> ...f", inverse_width, freqs_restframe - self.frequency)
 
         expb = torch.exp(-b**2) 
@@ -351,20 +350,8 @@ class Line:
         erfb1 = erfb[..., 1: , :]
 
         b10 = b1 - b0
+        a01 = a0 + a1
 
-        # threashhold differentiating the two regimes (large and small Doppler shift)
-        shift_threshold = 1.0e-4
-    
-        # Define the masks for the threashold    
-        # A = torch.Tensor(torch.abs(b10) >= shift_threshold)
-        B = torch.Tensor(torch.abs(b10) <  shift_threshold)
-
-        # dtau = torch.empty_like(b10)
-        
-        # dtau[A]  =           (      a1[A] -       a0[A]) * (expb0[A] - expb1[A])
-        # dtau[A] += sqrt_pi * (b0[A]*a1[A] - b1[A]*a0[A]) * (erfb0[A] - erfb1[A])
-        # dtau[A] *= 0.5 / b10[A]**2
-        
         sp_a1b0 = torch.einsum("..., ...f -> ...f", sqrt_pi * a1, b0)
         sp_a0b1 = torch.einsum("..., ...f -> ...f", sqrt_pi * a0, b1)
 
@@ -372,19 +359,13 @@ class Line:
         dtau += (sp_a1b0 - sp_a0b1) * (erfb0 - erfb1)
         dtau *= (0.5 / b10**2)
 
-        dtau[B]  = (1.0/ 2.0) * (a0[B] +     a1[B])
-        dtau[B] -= (1.0/ 3.0) * (a0[B] + 2.0*a1[B]) * b0[B]                        * b10[B]   
-        # dtau[B] += (1.0/12.0) * (a0[B] + 3.0*a1[B]) *         (2.0*b0[B]**2 - 1.0) * b10[B]**2
-        # dtau[B] -= (1.0/30.0) * (a0[B] + 4.0*a1[B]) * b0[B] * (2.0*b0[B]**2 - 3.0) * b10[B]**3
-        dtau[B] *= expb0[B]
-        
-        # dtau  = (1.0/ 2.0) * (a0 +     a1)
-        # dtau -= (1.0/ 3.0) * (a0 + 2.0*a1) * b0                     * b10   
-        # dtau += (1.0/12.0) * (a0 + 3.0*a1) *      (2.0*b0**2 - 1.0) * b10**2
-        # dtau -= (1.0/30.0) * (a0 + 4.0*a1) * b0 * (2.0*b0**2 - 3.0) * b10**3
-        # dtau *= expb0
-        
-        dtau *= dx
+        # Create a mask for the region where the above calculation might have numerical issues
+        mask_threshold = 1.0e-4
+        mask           = torch.Tensor(torch.abs(b10) < mask_threshold)
+
+        # Use a (second order) Taylor expansion in b10 for the masked region
+        dtau[mask] = (   torch.einsum("..., ...f", (1.0/2.0) *  a01      , expb0           ) \
+                       - torch.einsum("..., ...f", (1.0/3.0) * (a01 + a1), expb0 * b0 * b10) )[mask]
 
         tau = torch.empty_like(b)
         tau[...,  0 , :] = 0.0
@@ -400,8 +381,6 @@ class Line:
 
         eta_ij, chi_ij = self.emissivity_and_opacity_ij(pop=pop)
 
-        src = torch.einsum("..., f -> ...f", eta_ij/chi_ij, torch.ones_like(frequencies))
-
         dtau, tau = self.optical_depth_along_last_axis(
             chi_ij       = chi_ij,
             density      = density,
@@ -412,7 +391,8 @@ class Line:
             dx           = dx
         )
 
-        img = forward_image_along_last_axis(src, dtau, tau)
+        src = eta_ij / chi_ij
+        img = forward_image_along_last_axis(src=src, dtau=dtau, tau=tau)
 
         return img
 
