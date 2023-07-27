@@ -8,6 +8,20 @@ _Probabilistic 3D Reconstruction of Spectral Line Observations._
 ![Build status](https://github.com/Magritte-code/p3droslo/actions/workflows/upload-to-anaconda.yaml/badge.svg)
 
 
+## About
+
+p3droslo is a software library for probabilistic 3D reconstruction of astronomical spectral line observations.
+Observations of [spectral lines](https://en.wikipedia.org/wiki/Spectral_line) are indespensible in astronomy, since they encode a lot of information about the physical and chemical conditions of the medium in which they were formed.
+For instance, their narrow extend in frequency space make them very sensitive to Doppler shifts, such that their shape encodes the motion of the medium along the line of sight.
+Given a good model for the line formation process and a good inversion method, these physical and chemical properties can be retrieved.
+Currently, we mainly focus on retrieving the distributions of the abundance of the chemical species producing the line, the velocity field, and its kinetic temperature.
+
+More information about the model for [spectral line formation](https://p3droslo.readthedocs.io/en/latest/background/spectral_line_formation.html) and the [probabilistic reconstruction methods](https://p3droslo.readthedocs.io/en/latest/background/probabilistic_reconstruction.html) can be found in the [background](https://p3droslo.readthedocs.io/en/latest/background/index.html) pages.
+
+p3droslo is built on top of [PyTorch](https://pytorch.org) and benefits a lot from functionality provided by [Astropy](https://www.astropy.org).
+It is currently developed and maintained by [Frederik De Ceuster](https://freddeceuster.github.io) at [KU Leuven](https://www.kuleuven.be/english/kuleuven/index.html).
+
+
 ## Installation
 
 Get the latest release (version 0.0.14) either from [PyPI](https://pypi.org/project/p3droslo/), using `pip`, with:
@@ -42,7 +56,7 @@ We are open to contributions to p3droslo. More information can be found [here](h
 
 ## Collaborating
 
-We are always interested in collaborating on exciting projects! So, if you have a project or just an idea, or data that might benefit from probabilistic 3D reconstruction or any other thing you can find in this repository, please contact [me](https://freddeceuster.github.io).
+We are always interested in collaborating on exciting projects! So, if you have a project or just an idea, or data that might benefit from probabilistic 3D reconstruction or any other thing you can find in this repository, feel free to contact [me](https://freddeceuster.github.io).
 
 
 ## Acknowledgements

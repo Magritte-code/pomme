@@ -7,4 +7,5 @@ Some background on the physics of spectral line observations, the probabilistic 
    :maxdepth: 2
    :caption: Contents:
 
-   radiative_transfer
+   spectral_line_formation
+   probabilistic_reconstruction
