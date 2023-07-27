@@ -1,7 +1,7 @@
 p3droslo
 ########
 
-Welcome to the p3droslo documentation!
+Welcome to the *p3droslo* documentation!
 
 .. toctree::
    :maxdepth: 1
@@ -15,7 +15,8 @@ Welcome to the p3droslo documentation!
 About
 *****
 
-**p3droslo** is a software library for **probabilistic 3D reconstruction** of astronomical **spectral line observations**.
+*p3droslo* is a library for **probabilistic 3D reconstruction** of astronomical **spectral line observations**.
+
 Observations of `spectral lines <https://en.wikipedia.org/wiki/Spectral_line>`_ are indespensible in astronomy, since they encode a wealth of information about the physical and chemical conditions of the medium in which they were formed.
 For instance, their narrow extent in frequency space make them very sensitive to Doppler shifts, such that their shape encodes the motion of the medium along the line of sight.
 As a result, given a good model for the line formation process and a good inversion method, these physical and chemical properties can be retrieved from observations.
@@ -23,7 +24,7 @@ Currently, we mainly focus on retrieving the distributions of the abundance of t
 
 More information about the model for `spectral line formation <https://p3droslo.readthedocs.io/en/latest/background/spectral_line_formation.html>`_ and the `probabilistic reconstruction methods <https://p3droslo.readthedocs.io/en/latest/background/probabilistic_reconstruction.html>`_ can be found in the `background <https://p3droslo.readthedocs.io/en/latest/background/index.html>`_ pages.
 
-**p3droslo** is built on top of `PyTorch <https://pytorch.org>`_ and benefits a lot from functionality provided by `Astropy <https://www.astropy.org>`_.
+*p3droslo* is built on top of `PyTorch <https://pytorch.org>`_ and benefits a lot from functionality provided by `Astropy <https://www.astropy.org>`_.
 It is currently developed and maintained by `Frederik De Ceuster <https://freddeceuster.github.io>`_ at `KU Leuven <https://www.kuleuven.be/english/kuleuven/index.html>`_.
 
 
@@ -66,7 +67,7 @@ We are open to contributions to p3droslo. More information can be found `here <h
 Collaborating
 *************
 
-We are always interested in collaborating on exciting projects! So, if you have a project or just an idea, or data that might benefit from probabilistic 3D reconstruction or any other method you can find in this repository, feel free to contact `me <https://freddeceuster.github.io>`_.
+We are always interested in collaborating! If you have a project, or idea, or data that might benefit from probabilistic 3D reconstruction or any other method you can find in this repository, feel free to contact `me <https://freddeceuster.github.io>`_.
 
 
 Acknowledgements

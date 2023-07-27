@@ -1,6 +1,6 @@
 import torch
 
-from astropy import constante, units
+from astropy import constants, units
 
 
 class Hydrodynamics:
@@ -70,4 +70,4 @@ def steady_state_hydrodynamic_loss(model, f_x=0.0, f_y=0.0, f_z=0.0, heating_m_c
     # Return losses
     return losses
 
-    def loss_cont(self, )
+    # def loss_cont(self, )
