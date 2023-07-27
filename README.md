@@ -10,12 +10,13 @@ _Probabilistic 3D Reconstruction of Spectral Line Observations._
 
 ## About
 
-*p3droslo* is a library for **probabilistic 3D reconstruction** of astronomical **spectral line observations**.
+*p3droslo* is a python package that allows you to create **probabilistic 3D reconstructions** of astronomical **spectral line observations**.
 
-Observations of [spectral lines](https://en.wikipedia.org/wiki/Spectral_line) are indespensible in astronomy, since they encode a wealth of information about the physical and chemical conditions of the medium in which they were formed.
+Observations of [spectral lines](https://en.wikipedia.org/wiki/Spectral_line) are indespensible in astronomy, since they encode a wealth of information about the physical and chemical conditions of the medium from which they originate.
 For instance, their narrow extent in frequency space make them very sensitive to Doppler shifts, such that their shape encodes the motion of the medium along the line of sight.
-As a result, given a good model for the line formation process and a good inversion method, these physical and chemical properties can be retrieved from observations.
+As a result, given a good model for the line formation process and an inversion method, these physical and chemical properties can be retrieved from observations.
 Currently, we mainly focus on retrieving the distributions of the abundance of the chemical species producing the line, the velocity field, and its kinetic temperature.
+However, also other parameters can be retrieved.
 
 More information about the model for [spectral line formation](https://p3droslo.readthedocs.io/en/latest/background/spectral_line_formation.html) and the [probabilistic reconstruction methods](https://p3droslo.readthedocs.io/en/latest/background/probabilistic_reconstruction.html) can be found in the [background](https://p3droslo.readthedocs.io/en/latest/background/index.html) pages.
 
@@ -57,7 +58,7 @@ We are open to contributions to p3droslo. More information can be found [here](h
 
 ## Collaborating
 
-We are always interested in collaborating! If you have a project, an idea, or data that might benefit from probabilistic 3D reconstruction or any other method you can find in this repository, feel free to contact [me](https://freddeceuster.github.io).
+We are always interested in collaborating! If you have a project or data that might benefit from probabilistic 3D reconstruction or any other method you can find in this repository, feel free to contact [me](https://freddeceuster.github.io).
 
 
 ## Acknowledgements
