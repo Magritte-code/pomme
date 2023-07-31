@@ -5,6 +5,8 @@
 *.FITS
 docs/build/
 
+!tests/data/header_only.fits
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
