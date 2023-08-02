@@ -47,7 +47,14 @@ class TensorModel():
         # Set dtau_warning_threshold
         self.dtau_warning_threshold = dtau_warning_threshold
     
+
+    def dim(self):
+        """
+        Getter for the dimension of the TensorModel.
+        """
+        return len(self.shape)
     
+
     def __getitem__(self, key):
         """
         Getter for variables (vars). Allows the use of [] operators.
@@ -66,7 +73,7 @@ class TensorModel():
         elif isinstance(value, np.ndarray):
             self.vars[key] = torch.from_numpy(value)
         else:
-            raise ValueError("Only torch.Tensor is supported. (NumPy arrays are automatically cast.)")
+            self.vars[key] = torch.tensor(value)
         
 
     def parameters(self):
@@ -164,9 +171,19 @@ class TensorModel():
         Return the variable keys.
         """
         return self.vars.keys()
+
+
+    def origin_as_index_array(self, origin):
+        """
+        Convert origin to a numpy array.
+        """
+        if isinstance(origin, str) and (origin == 'centre'):
+            return 0.5 * (np.array(self.shape) - 1)
+        else:
+            return np.array(origin)
     
     
-    def get_coords(self, origin=None):
+    def get_coords(self, origin='centre'):
         """
         Getter for the coordinates of each tensor location.
         
@@ -177,10 +194,7 @@ class TensorModel():
             The dimension of the origin should match the dimension of the model.
         """
         # Cast origin into a numpy array
-        if origin is not None:
-            self.origin = np.array(origin)
-        elif self.origin is None:
-            self.origin = np.zeros(self.dimension)
+        self.origin = self.origin_as_index_array(origin)
         # Compute the coordinates of each tensor location
         if self.dimension == 1:
             self.coords = np.arange(self.shape[0])
@@ -193,12 +207,12 @@ class TensorModel():
         return self.coords
 
     
-    def get_radius(self, origin=None):
+    def get_radius(self, origin='centre'):
         """
         Getter for the radial cooridnate of each location.
         """
         # Check if coords are already set
-        if (self.coords is None) or not np.all(origin == self.origin):
+        if (self.coords is None) or not np.all(self.origin_as_index_array(origin) == self.origin):
             self.coords = self.get_coords(origin)
         # In 1D there only is a radial coord
         if self.dimension == 1:

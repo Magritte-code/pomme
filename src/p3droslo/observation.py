@@ -1,9 +1,12 @@
+import torch
 import numpy             as np
 import matplotlib.pyplot as plt
 
-from astropy.io import fits
-from astropy    import units
-from ipywidgets import interact
+from astropy.io          import fits
+from astropy             import units
+from ipywidgets          import interact
+from radio_beam          import Beam as RadioBeam
+from astropy.convolution import convolve
 
 
 class Observation:
@@ -155,3 +158,60 @@ class DataCube():
         return interact(plot,
                         i=(0, self.img.shape[1]-1),
                         j=(0, self.img.shape[2]-1) )
+
+
+class Beam():
+    
+    def __init__(self, datacube):
+
+        if abs(datacube.pixsize_x) != abs(datacube.pixsize_y):
+            raise ValueError("Pixels are not square! Cannot handle non-square pixels!")
+
+        # Create a radio-beam Beam object        
+        self.object = RadioBeam.from_fits_header(datacube.hdr)
+
+        # Extract the beam as a kernel
+        self.kernel = self.object.as_kernel(datacube.pixsize_x)
+
+        # Extract the beam as a torch kernel
+        self.torch_kernel = self.get_torch_kernel(datacube.pixsize_x)
+
+
+    def get_torch_kernel(self, pixsize):
+    
+        # First create a kernel object
+        kernel = self.object.as_kernel(pixsize) 
+
+        torch_kernel = torch.nn.Conv2d(
+            in_channels  = 1,
+            out_channels = 1,
+            kernel_size  = (kernel.array.shape[0], kernel.array.shape[1]),
+            padding      = 'same',
+            dtype        = torch.float64
+        )
+
+        torch_kernel.weight.data[0,0] = torch.from_numpy(kernel.array)
+        torch_kernel.bias  .data      = torch.zeros_like(torch_kernel.bias)
+
+        torch_kernel.weight.requires_grad_(False)
+        torch_kernel.bias  .requires_grad_(False)
+
+        return torch_kernel
+
+
+    def apply(self, image):
+        """
+        Apply beam kernel to image.
+        """
+        return convolve(image, self.kernel.array)
+    
+    
+    def torch_apply(self, data):
+        """
+        Apply torch kernel.
+        Assumes the last axis to contain the frequencies / channels.
+        """
+        dat = torch.moveaxis(data, -1, 0).view(data.shape[2], 1, data.shape[0], data.shape[1])
+        dat = self.torch_kernel(dat)
+        dat = torch.moveaxis(dat.view(data.shape[2], data.shape[0], data.shape[1]), 0, -1)
+        return dat

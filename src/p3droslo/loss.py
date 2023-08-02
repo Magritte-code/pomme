@@ -15,13 +15,23 @@ class Loss():
         """
         # Store keys
         self.keys = keys
-        # Provide entries for all losses
+        # Provide entries for all losses, norm, and weight
         self.loss   = {key:torch.zeros(1) for key in self.keys}
+        self.norm   = {key:1.0            for key in self.keys} 
+        self.weight = {key:1.0            for key in self.keys} 
         self.losses = {key:[]             for key in self.keys}
         # Provide entries for tot loss
         self.loss_tot   = torch.zeros(1)
         self.losses_tot = []
-    
+
+
+    def reset(self):
+        # Provide entries for all losses, norm, and weight
+        self.losses = {key:[] for key in self.keys}
+        # Provide entries for tot loss
+        self.loss_tot   = torch.zeros(1)
+        self.losses_tot = []
+
     
     def __getitem__(self, key):
         """
@@ -35,11 +45,31 @@ class Loss():
         Setter for variables (vars). Allows the use of [] operators.
         """
         if isinstance(value, torch.Tensor):
+            # weight
+            value *= self.weight[key]
+            # normalise
+            value *= self.norm[key]
+            # store
             self.loss[key] = value
             self.losses[key].append(value.item())
         else:
             raise ValueError("Only torch.Tensor is supported.")
-            
+
+
+    def renormalise(self, key):
+        """
+        Reset the norm to one over the current loss
+        """
+        self.norm[key] *= 1.0 / self.loss[key].item()
+
+
+    def renormalise_all(self):
+        """
+        Renormalise all losses.
+        """
+        for key in self.keys:
+            self.renormalise(key)
+
             
     def tot(self):
         """
@@ -109,7 +139,7 @@ class SphericalLoss:
     Copmutes the deviation from spherical symmetry. 
     """
 
-    def __init__(self, model, origin, weights=None):
+    def __init__(self, model, origin='centre', weights=None):
         # Get radial coordinates w.r.t. the given origin.
         r = model.get_radius(origin=origin)
         # Define the number of radial bins.

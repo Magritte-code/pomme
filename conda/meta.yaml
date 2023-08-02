@@ -19,6 +19,7 @@ requirements:
     - python={{ python_version }}
     - matplotlib
     - astroquery
+    - radio-beam
     - ipywidgets
     - pytorch>=2.0.0
     - astropy

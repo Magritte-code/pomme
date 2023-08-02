@@ -17,15 +17,17 @@ def image_along_last_axis(src, dtau, tau):
     emt_0 = exp_minus_tau[..., :-1, :]
     emt_1 = exp_minus_tau[..., +1:, :]
 
-    # Case a: dtau > threshold    
-    result  = torch.einsum("..., ...f -> ...f", src_0, emt_1 - emt_0 * (1.0 - dtau))
-    result += torch.einsum("..., ...f -> ...f", src_1, emt_0 - emt_1 * (1.0 + dtau))
-    result /= dtau
-    
     # threshold differentiating the two optical dpeth regimes
     mask_threshold = 1.0e-4
     mask = torch.Tensor(dtau < mask_threshold)
 
+    # Case a: dtau > threshold 
+    result  = torch.einsum("..., ...f -> ...f", src_0, emt_1 - emt_0 * (1.0 - dtau))
+    result += torch.einsum("..., ...f -> ...f", src_1, emt_0 - emt_1 * (1.0 + dtau))
+    result /= (dtau + 1.0e-30)
+    # note that the regularizer 1.0e-30 is never going to be significant
+    # however it is essential to avoid nans in backprop (see https://github.com/Magritte-code/p3droslo/issues/2)
+    
     # Use a Taylor expansion for small dtau
     cc     = (1.0/2.0) * dtau
     fac_0  = cc.clone() 

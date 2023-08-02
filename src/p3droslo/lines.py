@@ -357,7 +357,9 @@ class Line:
 
         dtau  = torch.einsum("..., ...f -> ...f", a1 - a0, expb0 - expb1)
         dtau += (sp_a1b0 - sp_a0b1) * (erfb0 - erfb1)
-        dtau *= (0.5 / b10**2)
+        dtau *= (0.5 / (b10**2 + 1.0e-30))
+        # note that the regularizer 1.0e-30 is never going to be significant
+        # however it is essential to avoid nans in backprop (see https://github.com/Magritte-code/p3droslo/issues/2)
 
         # Create a mask for the region where the above calculation might have numerical issues
         mask_threshold = 1.0e-4
