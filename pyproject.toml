@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "p3droslo"
 version = "0.0.14"
-description = "Probabilistic 3D Reconstruction of Specrtral Line Observations."
+description = "Probabilistic 3D Reconstruction of Spectral Line Observations."
 readme = "README.md"
 authors = [{ name = "Frederik De Ceuster", email = "frederik.deceuster@gmail.com" }]
 license = { file = "LICENSE" }

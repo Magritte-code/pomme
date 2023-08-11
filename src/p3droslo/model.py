@@ -18,7 +18,7 @@ def make_object_with_len(obj):
 
 class TensorModel():
     """
-    A (deterministic) model in which every variable is represented by a 3-tensor.
+    A (deterministic) model in which every variable is represented by a tensor.
     """
     reserved_keys = ["shape", "sizes", "free"]
     
