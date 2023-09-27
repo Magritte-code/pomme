@@ -4,6 +4,7 @@
 *.npz
 *.fits
 *.FITS
+*.ascii
 docs/build/
 
 !tests/data/header_only.fits
