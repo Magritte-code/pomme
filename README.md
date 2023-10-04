@@ -9,7 +9,6 @@ _Probabilistic 3D Reconstruction of Spectral Line Observations._
 
 
 ## About
-
 *p3droslo* is a python package that allows you to create **probabilistic 3D reconstructions** of astronomical **spectral line observations**.
 
 Observations of [spectral lines](https://en.wikipedia.org/wiki/Spectral_line) are indespensible in astronomy, since they encode a wealth of information about the physical and chemical conditions of the medium from which they originate.
