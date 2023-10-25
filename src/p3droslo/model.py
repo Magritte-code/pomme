@@ -290,6 +290,12 @@ class TensorModel():
         # Free variables 
         for key in keys:
             self.vars[key].requires_grad_(False)
+    
+    def fix_all(self):
+        """
+        Makes all model variables fixed.
+        """
+        self.fix(list(self.keys()))
             
             
     def is_field(self, key):
@@ -426,10 +432,10 @@ class SphericallySymmetric():
         )
         
         # Set origin for the 2D model halfway along the x axis
-        origin_2D = np.array([0.5*(self.model_2D.shape[0]-1), 0.0])
+        self.origin_2D = np.array([0.5*(self.model_2D.shape[0]-1), 0.0])
 
         # Get linear interpolation utilities
-        self.i_min, self.i_max, self.l = self.linint_utils(self.model_2D, origin_2D)
+        self.i_min, self.i_max, self.l = self.linint_utils(self.model_2D, self.origin_2D)
     
         # Get the circular weights
         self.c_weights = self.get_circular_weights()
@@ -520,9 +526,10 @@ class SphericallySymmetric():
         """
         Getter for the circular weights.
         """
-        coords = self.model_2D.get_coords()
-        
-        return torch.from_numpy(2.0*np.pi*coords[1,0])
+        coords = self.model_2D.get_coords(origin=self.origin_2D)
+        r = coords[1,0]
+        r[0] = 0.5 * r[1]
+        return torch.from_numpy(2.0*np.pi*r)
     
     
     def integrate_intensity(self, img):
@@ -540,7 +547,7 @@ class SphericallySymmetric():
         if keys is None:
             keys = self.model_1D.keys()
         # Get the radial coordinate of the model
-        r = self.model_1D.get_radius()
+        r = self.model_1D.get_radius(origin=[0])
         # Plot each 1D model variable
         for key in keys:
             if key not in exclude:
