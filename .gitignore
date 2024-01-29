@@ -5,6 +5,7 @@
 *.fits
 *.FITS
 *.ascii
+*.pt
 docs/build/
 
 !tests/data/header_only.fits
