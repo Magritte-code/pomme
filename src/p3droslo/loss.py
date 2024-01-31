@@ -163,3 +163,14 @@ class SphericalLoss:
         for i in range(self.N):
             sph_std[i] = var[self.masks[i]].std()
         return torch.mean(self.weights * sph_std)
+
+
+def steady_state_continuity_loss(model, rho, v_x, v_y, v_z):
+    """
+    Loss assuming steady state hydrodynamics, i.e. vanishing time derivatives in Euler's equations.
+    """
+    # Continuity equation (steady state): div(ρ v) = 0
+    loss_cont = model.diff_x(rho * v_x) + model.diff_y(rho * v_y) + model.diff_z(rho * v_z)
+    # Squared average over the model
+    loss_cont = torch.mean((loss_cont / rho)**2)
+    return loss_cont

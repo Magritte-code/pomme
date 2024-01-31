@@ -7,6 +7,9 @@ from torch.nn   import functional
 from ipywidgets import interact
 
 
+T_CMB = 2.725
+
+
 def planck(temperature, frequency):
     '''
     Planck function for thermal radiation.

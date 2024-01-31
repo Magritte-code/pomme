@@ -23,7 +23,7 @@ def get_initial_model(from_model, nCO, v_in, v_inf, beta, tmp, epsilon):
 
     model_1D['log_v_in'   ] = np.log(v_in)
     model_1D['log_v_inf'  ] = np.log(v_inf)
-    model_1D['beta'       ] = beta
+    model_1D['log_beta'   ] = np.log(beta)
 
     model_1D['log_T_in'   ] = np.log(tmp)
     model_1D['log_epsilon'] = np.log(epsilon)
@@ -33,7 +33,7 @@ def get_initial_model(from_model, nCO, v_in, v_inf, beta, tmp, epsilon):
     model_1D.free('log_CO')
     model_1D.free('log_v_in')
     model_1D.free('log_v_inf')
-    model_1D.free('beta')
+    model_1D.free('log_beta')
     model_1D.free('log_T_in')
     model_1D.free('log_epsilon')
     # model_1D.free('log_velocity')
@@ -140,7 +140,7 @@ def fit2(loss, spherical, obs, N_epochs=10, lr=1.0e-1, w_rep=1.0, w_reg=1.0, w_c
         spherical.model_1D['log_CO'],
         spherical.model_1D['log_v_in'],
         spherical.model_1D['log_v_inf'],
-        spherical.model_1D['beta'],
+        spherical.model_1D['log_beta'],
         spherical.model_1D['log_T_in'],
         spherical.model_1D['log_epsilon'],
     ]
@@ -173,12 +173,14 @@ def fit2(loss, spherical, obs, N_epochs=10, lr=1.0e-1, w_rep=1.0, w_reg=1.0, w_c
 def reconstruct2(spherical, obs):
 
     loss = Loss(['rep', 'reg', 'cnt'])
+    # loss = Loss(['rep', 'reg'])
 
     img = fit2(loss, spherical, obs, N_epochs=3  , lr=1.0e-1, w_rep=1.0e+0, w_reg=1.0e-0, w_tmp=1.0e+0, w_cnt=1.0e+0)
     loss.renormalise_all()
     loss.reset()
-    img = fit2(loss, spherical, obs, N_epochs=350, lr=5.0e-1, w_rep=1.0e+0, w_reg=1.0e-1, w_tmp=1.0e+2, w_cnt=1.0e+0)
-    img = fit2(loss, spherical, obs, N_epochs=350, lr=5.0e-1, w_rep=1.0e+2, w_reg=1.0e+0, w_tmp=2.0e+2, w_cnt=1.0e+1)
+    # img = fit2(loss, spherical, obs, N_epochs=8, lr=1.0e-1, w_rep=1.0e+0, w_reg=1.0e-1, w_tmp=1.0e+2, w_cnt=1.0e+0)
+    img = fit2(loss, spherical, obs, N_epochs=350, lr=1.0e-1, w_rep=1.0e+0, w_reg=1.0e-1, w_tmp=1.0e+2, w_cnt=1.0e+0)
+    img = fit2(loss, spherical, obs, N_epochs=350, lr=1.0e-1, w_rep=1.0e+2, w_reg=1.0e+0, w_tmp=2.0e+2, w_cnt=1.0e+1)
     img = fit2(loss, spherical, obs, N_epochs=350, lr=1.0e-1, w_rep=1.0e+3, w_reg=1.0e+0, w_tmp=4.0e+2, w_cnt=5.0e+1)
     img = fit2(loss, spherical, obs, N_epochs=350, lr=1.0e-1, w_rep=1.0e+5, w_reg=1.0e+0, w_tmp=8.0e+2, w_cnt=1.0e+2)
     

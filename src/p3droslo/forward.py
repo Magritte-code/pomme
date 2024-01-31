@@ -1,7 +1,7 @@
 import torch
 
 
-def image_along_last_axis(src, dtau, tau):
+def image_along_last_axis(src, dtau, tau, img_bdy):
     
     # Check dimensionality of the input
     assert src.dim() == tau.dim()-1, "Tensor src should only have spatial dimensions, no frequency!"
@@ -42,6 +42,6 @@ def image_along_last_axis(src, dtau, tau):
     result[mask] = (  torch.einsum("..., ...f -> ...f", src_0, emt_0 * fac_0) \
                     + torch.einsum("..., ...f -> ...f", src_1, emt_1 * fac_1) )[mask]
 
-    img = torch.sum(result, dim=last_axis)
+    img = img_bdy * exp_minus_tau[..., -1, :] + torch.sum(result, dim=last_axis)
 
     return img

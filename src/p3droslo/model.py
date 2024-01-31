@@ -4,6 +4,8 @@ import numpy             as np
 import matplotlib.pyplot as plt
 
 from p3droslo.utils import interpolate
+from tqdm           import tqdm
+from time           import perf_counter
 
 
 def make_object_with_len(obj):
@@ -85,7 +87,7 @@ class TensorModel():
     
     def free_parameters(self):
         """
-        Return a list of all variables in the TensorModel.
+        Return a list of all "free" variables in the TensorModel.
         """
         return [v for v in self.vars.values() if v.requires_grad]
     
@@ -230,7 +232,7 @@ class TensorModel():
 
         direction = (1.0 / radius) * coords
         
-        return torch.from_numpy(direction)
+        return direction
         
         
     def apply(self, func, exclude=[], include=[]):
@@ -261,7 +263,7 @@ class TensorModel():
     
     def free(self, keys):
         """
-        Indicates which variables can freely be adjusted in optimistation.
+        "Frees" the variables that should be adjusted in optimistation.
         (and hence require a gradient.)
         """
         # Make sure that keys are iterable
@@ -281,7 +283,7 @@ class TensorModel():
 
     def fix(self, keys):
         """
-        Indicates which variables are fixed in optimistation.
+        "Fixes" the variables that should not be adjusted in optimistation.
         (and hence do not require a gradient.)
         """
         # Make sure that keys are a list
@@ -529,7 +531,7 @@ class SphericallySymmetric():
         coords = self.model_2D.get_coords(origin=self.origin_2D)
         r = coords[1,0]
         r[0] = 0.5 * r[1]
-        return torch.from_numpy(2.0*np.pi*r)
+        return torch.from_numpy(2.0*np.pi*self.model_1D.dx(0)*r)
     
     
     def integrate_intensity(self, img):
@@ -559,3 +561,121 @@ class SphericallySymmetric():
                 else:
                     print(f"{key:<21}{self.model_1D[key].data}")
         
+
+class SphericalModel:
+    """
+    Spherically symmetric model.
+    """
+
+    def __init__(self, rs, model_1D, r_star=0.0):
+
+        self.rs       = rs            # Radii of the spherical model
+        self.Nb       = len(rs) - 1   # Number of impact parameters
+        self.r_star   = r_star        # Radius of the star
+        self.model_1D = model_1D
+
+        # Setup rays
+        self.image_ray_tracer()
+ 
+
+    def get_velocity(self, model_1D):
+        raise NotImplementedError('First implement and define get_velocity.')
+
+
+    def get_temperature(self, model_1D):
+        raise NotImplementedError('First implement and define get_temperature.')
+
+
+    def get_abundance(self, model_1D):
+        raise NotImplementedError('First implement and define get_abundance.')
+
+
+    def get_turbulence(self, model_1D):
+        raise NotImplementedError('First implement and define get_turbulence.')
+
+
+    def get_boundary_condition(self, model_1D, frequency, b):
+        raise NotImplementedError('First implement and define get_boundary_condition.')
+
+
+    def image_ray_tracer(self):
+
+        # Initialise lists that will contain results
+        self.dZss = []   # Distance increments along th ray
+        self.idss = []   # Grid point indices along the ray
+        self.diss = []   # Directional cosinses along the ray
+
+        # For each impact parameter
+        for i in range(self.Nb):
+
+            Zs  = np.sqrt((self.rs[i:] - self.rs[i]) * (self.rs[i:] + self.rs[i]))
+            dZs = np.diff(Zs)
+            ids = np.arange(i+1, self.Nb+1)
+            dis = Zs[1:] / self.rs[i+1:]
+
+            # Check for NaNs (may occur by cancellation errors in the definition of Zs)
+            if np.isnan(dZs).any():
+                raise Warning('NaNs in dZs!')
+            if np.isnan(dis).any():
+                raise Warning('NaNs in dis!')
+
+            if self.rs[i] >= self.r_star:
+                # Append the data to the lists for this impact parameter
+                self.dZss.append(torch.from_numpy(np.concatenate(( dZs[::-1],        dZs))))
+                self.idss.append(torch.from_numpy(np.concatenate(( ids[::-1], [i],   ids))))
+                self.diss.append(torch.from_numpy(np.concatenate((-dis[::-1], [0.0], dis))))
+            else:
+                # Find where the (reverse) ray is outside the star
+                # Note: we need the reverse ray since our observer is at -R
+                mask = (self.rs[i+1:][::-1] > self.r_star)
+                # Append the data to the lists for this impact parameter
+                self.dZss.append(torch.from_numpy(dZs[::-1][mask][:-1]))
+                self.idss.append(torch.from_numpy(ids[::-1][mask]))
+                self.diss.append(torch.from_numpy(dis[::-1][mask]))
+
+
+    def image(self, lines, frequencies, r_max=np.inf):
+        """
+        Forward model with analytic velocity and temperature profiles.
+        """
+        # Extract the model parameters
+        velocity    = self.get_velocity   (self.model_1D)
+        abundance   = self.get_abundance  (self.model_1D)
+        temperature = self.get_temperature(self.model_1D)
+        turbulence  = self.get_turbulence (self.model_1D)
+
+        # Surface area of the annulus at each impact parameter
+        dss = np.pi * (self.rs[1:] + self.rs[:-1]) * (self.rs[1:] - self.rs[:-1])
+
+        # Tensor for the intensities in each line
+        Iss = torch.zeros((len(lines), len(frequencies[0])), dtype=torch.float64)
+
+        # For each line
+        for l, (line, freq) in enumerate(zip(lines, frequencies)):
+
+            # Check that the number of frequencies is the same for all lines
+            assert len(freq) == len(Iss[l])
+
+            # For each impact parameter
+            for i in range(self.Nb):
+                
+                if self.rs[i] < r_max:
+
+                    # Get boundary condition at this impact parameter
+                    img_bdy = self.get_boundary_condition(self.model_1D, frequency=freq, b=self.rs[i])
+
+                    # Get intensity at this impact parameter
+                    I_loc = line.LTE_image_along_last_axis(
+                        abundance    = abundance  [self.idss[i]],
+                        temperature  = temperature[self.idss[i]],
+                        v_turbulence = turbulence [self.idss[i]],
+                        velocity_los = velocity   [self.idss[i]] * self.diss[i],
+                        frequencies  = freq,
+                        dx           = self.dZss[i],
+                        img_bdy      = img_bdy
+                    )
+
+                    # Integrate this piece of the annulus
+                    Iss[l] += dss[i] * I_loc
+                    
+        return Iss

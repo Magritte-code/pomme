@@ -5,7 +5,7 @@ from torch.optim    import Adam
 from tqdm           import tqdm
 from astropy        import constants, units
 from p3droslo.model import TensorModel
-from p3droslo.loss  import Loss, diff_loss
+from p3droslo.loss  import Loss, diff_loss, SphericalLoss
 from p3droslo.lines import Line
 
 
@@ -67,7 +67,7 @@ def forward_analytic_velo_and_T(model):
     )
 
     img = line.LTE_image_along_last_axis(
-        density      = torch.exp(model['log_CO'          ]),
+        abundance    = torch.exp(model['log_CO'          ]),
         temperature  = temperature,
         v_turbulence = torch.exp(model['log_v_turbulence']),
         velocity_los = velocity_r * d,
@@ -78,8 +78,25 @@ def forward_analytic_velo_and_T(model):
     return 1.0e+12 * img
 
 
+def steady_state_continuity_loss(model, rho, v_x, v_y, v_z):
+    """
+    Loss assuming steady state hydrodynamics, i.e. vanishing time derivatives in Euler's equations.
+    """
+    # Continuity equation (steady state): div(ρ v) = 0
+    loss_cont = model.diff_x(rho * v_x) + model.diff_y(rho * v_y) + model.diff_z(rho * v_z)
+    # Squared average over the model
+    loss_cont = torch.mean((loss_cont / rho)**2)
 
-def fit(loss, model, obs, N_epochs=100, lr=1.0e-1, w_rep=1.0, w_reg=1.0, w_cnt=1.0, w_tmp=1.0):
+    return loss_cont
+
+
+def poslog(x):
+    x_min_allowed = x.max() * 1.0e-10 
+    x_min         = x.min()
+    return torch.log(x + (x_min_allowed - x_min))
+
+
+def fit(loss, model, obs, N_epochs=100, lr=1.0e-1, w_rep=1.0, w_nrm_rep=1.0, w_reg=1.0, w_cnt=1.0, w_sph=1.0):
 
     params = [
         model['log_CO'],
@@ -92,18 +109,50 @@ def fit(loss, model, obs, N_epochs=100, lr=1.0e-1, w_rep=1.0, w_reg=1.0, w_cnt=1
 
     optimizer = Adam(params, lr=lr)
 
+    sphericalLoss = SphericalLoss(model, origin='centre')
+
     for _ in tqdm(range(N_epochs)):
         
         # Run forward model
         img = forward_analytic_velo_and_T(model)
  
         # Compute the reproduction loss
+        # loss['log_rep'] = w_log_rep * torch.nn.functional.mse_loss(poslog(img), poslog(obs))
+
         loss['rep'] = w_rep * torch.nn.functional.mse_loss(img, obs)
+
+        nrm = 1.0 / obs.mean(dim=2)
+
+        loss['nrm_rep'] = w_nrm_rep * torch.nn.functional.mse_loss(
+            torch.einsum('ijf, ij -> ijf', img, nrm),
+            torch.einsum('ijf, ij -> ijf', obs, nrm)
+        )
+
         # Compute the regularisation loss
         loss['reg'] = w_reg * diff_loss(model['log_CO'])
+
+        # loss['sph'] = w_sph * sphericalLoss.eval(torch.exp(model['log_CO']))
+
+        r    = model.get_radius(origin='centre')
+        r_in = r.min()
+        d    = model.get_radial_direction(origin='centre')
+
+        velocity_r = analytic_velo(
+            r     = torch.from_numpy(r),
+            r_in  = r_in,
+            v_in  = torch.exp(model['log_v_in']),
+            v_inf = torch.exp(model['log_v_inf']),
+            beta  =           model['beta']
+        )
+
         # Compute the hydrodynamic loss
-        # loss['cnt'] = w_cnt * steady_state_cont_loss(spherical, torch.from_numpy(r))    
-        # loss['tmp'] = w_tmp * steady_state_heat_loss(spherical, torch.from_numpy(r))    
+        loss['cnt'] = w_cnt * steady_state_continuity_loss(
+            model = model,
+            rho   = torch.exp(model['log_CO']),
+            v_x   = velocity_r * d[0],
+            v_y   = velocity_r * d[1],
+            v_z   = velocity_r * d[2],
+        )      
 
         # Set gradients to zero
         optimizer.zero_grad()
@@ -164,7 +213,9 @@ def init():
     # model.fix('velocity_z')
 
     # loss = Loss(['rep', 'reg', 'cnt', 'tmp'])
-    loss = Loss(['rep', 'reg'])
+    # loss = Loss(['rep', 'reg', 'cnt'])
+    loss = Loss(['rep', 'nrm_rep', 'reg', 'cnt'])
+    # loss = Loss(['log_rep', 'reg', 'sph'])
 
     img = forward_analytic_velo_and_T(model)
 
@@ -179,7 +230,7 @@ def init():
 
 def run():
 
-    loss = Loss(['rep', 'reg'])
+    loss = Loss(['rep', 'reg', 'cnt'])
 
     model = TensorModel.load('models/model_3D_CO_all.h5')
 

@@ -140,7 +140,7 @@ class Line:
     
     def LTE_pops (self, temperature):
         """
-        LTE level populations for the given temperature.
+        Relative LTE level populations for the given temperature.
     
         Parameters
         ----------
@@ -202,7 +202,7 @@ class Line:
 
     
 
-    def LTE_emissivity_and_opacity(self, density, temperature, v_turbulence, frequencies):
+    def LTE_emissivity_and_opacity(self, abundance, temperature, v_turbulence, frequencies):
         """
         Line emissivity and opacity assuming LTE.
         
@@ -240,9 +240,9 @@ class Line:
         # print("profile  ", t)
         
         # t =- time()
-        # Fold the emessivities and opacities with the profile and the number density
-        eta = torch.einsum("..., ...f -> ...f", eta*density, profile)
-        chi = torch.einsum("..., ...f -> ...f", chi*density, profile)
+        # Fold the emessivities and opacities with the profile and the number abundance
+        eta = torch.einsum("..., ...f -> ...f", eta*abundance, profile)
+        chi = torch.einsum("..., ...f -> ...f", chi*abundance, profile)
         # t += time()
         # print("multiply ", t)
         
@@ -250,7 +250,7 @@ class Line:
         return (eta, chi)
     
 
-    def optical_depth_along_last_axis_slow(self, chi_ij, density, temperature, v_turbulence, velocity_los, frequencies, dx):
+    def optical_depth_along_last_axis_slow(self, chi_ij, abundance, temperature, v_turbulence, velocity_los, frequencies, dx):
         """
         Line optical depth along the last axis.
         """
@@ -260,7 +260,7 @@ class Line:
         inverse_width = 1.0 / self.gaussian_width(temperature=temperature, v_turbulence=v_turbulence)
   
         # Get the index of the last spatial axis
-        last_axis = density.dim() - 1
+        last_axis = abundance.dim() - 1
 
         # Compute the Doppler shift for each element
         shift = 1.0 + velocity_los * (1.0 / CC)
@@ -269,7 +269,7 @@ class Line:
         freqs_restframe = torch.einsum("..., f -> ...f", shift, frequencies)
 
         # Define the a and b (tabulated) functions
-        a = (1.0/sqrt_pi) * inverse_width * chi_ij * density
+        a = (1.0/sqrt_pi) * inverse_width * chi_ij * abundance
         a = torch.einsum("...,    f -> ...f", a, torch.ones_like(frequencies))
         b = torch.einsum("..., ...f -> ...f", inverse_width, freqs_restframe - self.frequency)
 
@@ -309,7 +309,7 @@ class Line:
         return dtau, tau
 
 
-    def optical_depth_along_last_axis(self, chi_ij, density, temperature, v_turbulence, velocity_los, frequencies, dx):
+    def optical_depth_along_last_axis(self, chi_ij, abundance, temperature, v_turbulence, velocity_los, frequencies, dx):
         """
         Line optical depth along the last axis.
         """
@@ -319,7 +319,7 @@ class Line:
         inverse_width = 1.0 / self.gaussian_width(temperature=temperature, v_turbulence=v_turbulence)
   
         # Get the index of the last spatial axis
-        last_axis = density.dim() - 1
+        last_axis = abundance.dim() - 1
 
         # Compute the Doppler shift for each element
         shift = 1.0 + velocity_los * (1.0 / CC)
@@ -328,17 +328,19 @@ class Line:
         freqs_restframe = torch.einsum("..., f -> ...f", shift, frequencies)
 
         # Define the a and b (tabulated) functions (Note: we absorb dx in the definition of a for efficiency)
-        a = (dx/sqrt_pi) * inverse_width * chi_ij * density
+        a = (1.0/sqrt_pi) * inverse_width * chi_ij * abundance
         b = torch.einsum("..., ...f -> ...f", inverse_width, freqs_restframe - self.frequency)
+
+        # if a.isnan().any():
+        #     raise Warning("NaNs in a.")
+        # if b.isnan().any():
+        #     raise Warning("NaNs in b.")
 
         expb = torch.exp(-b**2) 
         erfb = torch.erf( b   ) 
 
-        # a0 = a[..., :-1, :]
-        # a1 = a[..., 1: , :]
-        
-        a0 = a[..., :-1]
-        a1 = a[..., 1: ]
+        a0 = a[..., :-1] * dx
+        a1 = a[..., 1: ] * dx
     
         b0 = b[..., :-1, :]
         b1 = b[..., 1: , :]
@@ -355,11 +357,27 @@ class Line:
         sp_a1b0 = torch.einsum("..., ...f -> ...f", sqrt_pi * a1, b0)
         sp_a0b1 = torch.einsum("..., ...f -> ...f", sqrt_pi * a0, b1)
 
+        # if a1.isnan().any():
+        #     raise Warning("NaNs in a1.")
+        # if a0.isnan().any():
+        #     raise Warning("NaNs in a0.")
+        # if b0.isnan().any():
+        #     raise Warning("NaNs in b0.")
+        # if b1.isnan().any():
+        #     raise Warning("NaNs in b1.")
+        # if sp_a1b0.isnan().any():
+        #     raise Warning("NaNs in sp_a1b0.")
+        # if sp_a0b1.isnan().any():
+        #     raise Warning("NaNs in sp_a0b1.")
+
         dtau  = torch.einsum("..., ...f -> ...f", a1 - a0, expb0 - expb1)
         dtau += (sp_a1b0 - sp_a0b1) * (erfb0 - erfb1)
         dtau *= (0.5 / (b10**2 + 1.0e-30))
         # note that the regularizer 1.0e-30 is never going to be significant
         # however it is essential to avoid nans in backprop (see https://github.com/Magritte-code/p3droslo/issues/2)
+
+        # if dtau.isnan().any():
+        #     raise Warning("NaNs in dtau before mask.")
 
         # Create a mask for the region where the above calculation might have numerical issues
         mask_threshold = 1.0e-4
@@ -369,6 +387,9 @@ class Line:
         dtau[mask] = (   torch.einsum("..., ...f", (1.0/2.0) *  a01      , expb0           ) \
                        - torch.einsum("..., ...f", (1.0/3.0) * (a01 + a1), expb0 * b0 * b10) )[mask]
 
+        # if dtau.isnan().any():
+        #     raise Warning("NaNs in dtau after mask.")
+
         tau = torch.empty_like(b)
         tau[...,  0 , :] = 0.0
         tau[..., +1:, :] = torch.cumsum(dtau, dim=last_axis)
@@ -376,16 +397,19 @@ class Line:
         return dtau, tau
 
     
-    def image_along_last_axis(self, pop, density, temperature, v_turbulence, velocity_los, frequencies, dx):
+    def image_along_last_axis(self, pop, abundance, temperature, v_turbulence, velocity_los, frequencies, dx, img_bdy):
         """
         Create an image along the last data axis
         """
 
         eta_ij, chi_ij = self.emissivity_and_opacity_ij(pop=pop)
 
+        # if eta_ij.isnan().any() or chi_ij.isnan().any():
+        #     raise Warning("NaNs in emissivity or opacity.")
+
         dtau, tau = self.optical_depth_along_last_axis(
             chi_ij       = chi_ij,
-            density      = density,
+            abundance    = abundance,
             temperature  = temperature,
             v_turbulence = v_turbulence,
             velocity_los = velocity_los,
@@ -393,13 +417,19 @@ class Line:
             dx           = dx
         )
 
+        # if dtau.isnan().any() or tau.isnan().any():
+        #     raise Warning("NaNs in dtau or tau.")
+
         src = eta_ij / chi_ij
-        img = forward_image_along_last_axis(src=src, dtau=dtau, tau=tau)
+        img = forward_image_along_last_axis(src=src, dtau=dtau, tau=tau, img_bdy=img_bdy)
+
+        # if img.isnan().any():
+        #     raise Warning("NaNs in image.")
 
         return img
 
-
-    def LTE_image_along_last_axis(self, density, temperature, v_turbulence, velocity_los, frequencies, dx):
+    # @torch.compile
+    def LTE_image_along_last_axis(self, abundance, temperature, v_turbulence, velocity_los, frequencies, dx, img_bdy):
         """
         Create an image along the last data axis, assuming LTE level populations
         """
@@ -408,15 +438,25 @@ class Line:
             temperature = temperature
         )
 
+        # print_var('pop         ', pop)
+        # print_var('abundance   ', abundance)
+        # print_var('temperature ', temperature)
+        # print_var('v_turbulence', v_turbulence)
+        # print_var('velocity_los', velocity_los)
+        # print_var('frequencies ', frequencies)
+
         img = self.image_along_last_axis(
             pop          = pop,
-            density      = density,
+            abundance    = abundance,
             temperature  = temperature,
             v_turbulence = v_turbulence,
             velocity_los = velocity_los,
             frequencies  = frequencies,
-            dx           = dx
+            dx           = dx,
+            img_bdy      = img_bdy
         )
+
+        # print_var('img', img)
 
         return img
 
