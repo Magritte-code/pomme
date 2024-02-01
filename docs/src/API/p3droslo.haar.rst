@@ -1,7 +1,7 @@
-p3droslo.haar
+pomme.haar
 =============
 
-.. automodule:: p3droslo.haar
+.. automodule:: pomme.haar
    :members:
    :undoc-members:
    :show-inheritance:

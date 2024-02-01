@@ -1,4 +1,4 @@
-# Version number of this package (p3droslo)
+# Version number of this package (pomme)
 __version__ = "0.0.15"
 
 import torch

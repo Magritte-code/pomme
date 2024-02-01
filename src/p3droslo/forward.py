@@ -26,7 +26,7 @@ def image_along_last_axis(src, dtau, tau, img_bdy):
     result += torch.einsum("..., ...f -> ...f", src_1, emt_0 - emt_1 * (1.0 + dtau))
     result /= (dtau + 1.0e-30)
     # note that the regularizer 1.0e-30 is never going to be significant
-    # however it is essential to avoid nans in backprop (see https://github.com/Magritte-code/p3droslo/issues/2)
+    # however it is essential to avoid nans in backprop (see https://github.com/Magritte-code/pomme/issues/2)
     
     # Use a Taylor expansion for small dtau
     cc     = (1.0/2.0) * dtau

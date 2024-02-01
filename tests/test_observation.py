@@ -2,7 +2,7 @@ import torch
 import numpy as np
 
 from os                   import path
-from p3droslo.observation import Observation, DataCube, Beam
+from pomme.observation import Observation, DataCube, Beam
 
 # Get the path to this folder
 this_folder = path.dirname(path.abspath(__file__))

@@ -4,8 +4,8 @@ import numpy as np
 from time             import time
 from astroquery.lamda import Lamda, parse_lamda_datafile
 from astropy          import constants, units
-from p3droslo.utils   import get_molar_mass, print_var
-from p3droslo.forward import image_along_last_axis as forward_image_along_last_axis
+from pomme.utils   import get_molar_mass, print_var
+from pomme.forward import image_along_last_axis as forward_image_along_last_axis
 
 
 # Constants
@@ -374,7 +374,7 @@ class Line:
         dtau += (sp_a1b0 - sp_a0b1) * (erfb0 - erfb1)
         dtau *= (0.5 / (b10**2 + 1.0e-30))
         # note that the regularizer 1.0e-30 is never going to be significant
-        # however it is essential to avoid nans in backprop (see https://github.com/Magritte-code/p3droslo/issues/2)
+        # however it is essential to avoid nans in backprop (see https://github.com/Magritte-code/pomme/issues/2)
 
         # if dtau.isnan().any():
         #     raise Warning("NaNs in dtau before mask.")

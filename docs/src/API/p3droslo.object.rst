@@ -1,7 +1,7 @@
-p3droslo.object
+pomme.object
 ===============
 
-.. automodule:: p3droslo.object
+.. automodule:: pomme.object
    :members:
    :undoc-members:
    :show-inheritance:

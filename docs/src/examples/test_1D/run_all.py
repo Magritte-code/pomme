@@ -3,8 +3,8 @@ plt.rcParams["font.family"] = "serif"
 import numpy as np
 import torch
 
-from p3droslo.model import TensorModel, SphericallySymmetric
-from p3droslo.loss import Loss
+from pomme.model import TensorModel, SphericallySymmetric
+from pomme.loss import Loss
 
 from test_1D                  import get_model, get_obs, forward, frequencies, velocities, r_in, v_fac
 from test_1D_CO_and_T_and_vel import get_initial_model, reconstruct, reconstruct2

@@ -1,7 +1,7 @@
-p3droslo.reconstruction
+pomme.reconstruction
 =======================
 
-.. automodule:: p3droslo.reconstruction
+.. automodule:: pomme.reconstruction
    :members:
    :undoc-members:
    :show-inheritance:

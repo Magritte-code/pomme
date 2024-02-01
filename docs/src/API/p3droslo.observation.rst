@@ -1,7 +1,7 @@
-p3droslo.observation
+pomme.observation
 ====================
 
-.. automodule:: p3droslo.observation
+.. automodule:: pomme.observation
    :members:
    :undoc-members:
    :show-inheritance:

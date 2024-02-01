@@ -1,7 +1,7 @@
-p3droslo.plot
+pomme.plot
 =============
 
-.. automodule:: p3droslo.plot
+.. automodule:: pomme.plot
    :members:
    :undoc-members:
    :show-inheritance:

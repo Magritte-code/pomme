@@ -1,7 +1,7 @@
-p3droslo.lines
+pomme.lines
 ==============
 
-.. automodule:: p3droslo.lines
+.. automodule:: pomme.lines
    :members:
    :undoc-members:
    :show-inheritance:

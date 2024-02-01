@@ -1,7 +1,7 @@
-p3droslo.utils module
+pomme.utils module
 =====================
 
-.. automodule:: p3droslo.utils
+.. automodule:: pomme.utils
    :members:
    :undoc-members:
    :show-inheritance:

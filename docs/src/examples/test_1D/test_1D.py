@@ -2,8 +2,8 @@ import numpy             as np
 import torch
 
 from astropy              import units, constants
-from p3droslo.model       import TensorModel, SphericallySymmetric
-from p3droslo.lines       import Line
+from pomme.model       import TensorModel, SphericallySymmetric
+from pomme.lines       import Line
 
 
 # Line data

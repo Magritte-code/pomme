@@ -1,7 +1,7 @@
-p3droslo.loss
+pomme.loss
 =============
 
-.. automodule:: p3droslo.loss
+.. automodule:: pomme.loss
    :members:
    :undoc-members:
    :show-inheritance:

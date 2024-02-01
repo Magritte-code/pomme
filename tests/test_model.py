@@ -1,6 +1,6 @@
 import torch
 
-from p3droslo.model import TensorModel
+from pomme.model import TensorModel
 
 
 def test_constructor_1D():

@@ -63,28 +63,28 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
 
-      - name: Install dependencies and p3droslo (try 1)
+      - name: Install dependencies and pomme (try 1)
         id: install_try1
         run: |
           sleep 5
           mamba install pytest>=7
-          mamba install -c freddeceuster p3droslo
+          mamba install -c freddeceuster pomme
 
-      - name: Install dependencies and p3droslo (try 2)
+      - name: Install dependencies and pomme (try 2)
         id: install_try2
         if: steps.install_try1.outcome == 'failure'
         run: |
           sleep 5
           mamba install pytest>=7
-          mamba install -c freddeceuster p3droslo
+          mamba install -c freddeceuster pomme
 
-      - name: Install dependencies and p3droslo (try 3)
+      - name: Install dependencies and pomme (try 3)
         id: install_try3
         if: steps.install_try2.outcome == 'failure'
         run: |
           sleep 5
           mamba install pytest>=7
-          mamba install -c freddeceuster p3droslo
+          mamba install -c freddeceuster pomme
     
     
       - name: Test with pytest

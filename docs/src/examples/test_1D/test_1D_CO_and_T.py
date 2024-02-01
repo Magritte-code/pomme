@@ -6,9 +6,9 @@ from torch.optim          import Adam
 from tqdm                 import tqdm
 from astropy              import units, constants
 
-from p3droslo.model       import TensorModel, SphericallySymmetric
-from p3droslo.lines       import Line
-from p3droslo.loss        import Loss, diff_loss
+from pomme.model       import TensorModel, SphericallySymmetric
+from pomme.lines       import Line
+from pomme.loss        import Loss, diff_loss
 
 from test_1D import forward, get_model, line, frequencies, velocities, r_in
 

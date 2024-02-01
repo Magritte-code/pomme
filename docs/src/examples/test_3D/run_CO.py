@@ -4,9 +4,9 @@ import numpy as np
 from torch.optim    import Adam
 from tqdm           import tqdm
 from astropy        import constants, units
-from p3droslo.model import TensorModel
-from p3droslo.loss  import Loss, diff_loss, SphericalLoss
-from p3droslo.lines import Line
+from pomme.model import TensorModel
+from pomme.loss  import Loss, diff_loss, SphericalLoss
+from pomme.lines import Line
 
 
 vmax = 13000.0

@@ -1,8 +1,8 @@
 import torch
 
 from astropy        import constants
-from p3droslo.lines import Line
-from p3droslo.utils import get_molar_mass, planck, T_CMB
+from pomme.lines import Line
+from pomme.utils import get_molar_mass, planck, T_CMB
 
 
 # Lines

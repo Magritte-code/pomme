@@ -18,7 +18,7 @@ year = datetime.datetime.now().year
 
 # -- Project information -----------------------------------------------------
 
-project = 'p3droslo'
+project = 'pomme'
 copyright = f'2022-{year}, Frederik De Ceuster'
 author = 'Frederik De Ceuster'
 
@@ -54,7 +54,7 @@ exclude_patterns = ['_build']
 # a list of builtin themes.
 #
 html_theme = 'furo'
-# html_logo  = 'images/p3droslo_logo.svg'
+# html_logo  = 'images/pomme_logo.svg'
 # html_theme_options = {'logo_only': True}
 
 

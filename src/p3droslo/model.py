@@ -3,7 +3,7 @@ import torch
 import numpy             as np
 import matplotlib.pyplot as plt
 
-from p3droslo.utils import interpolate
+from pomme.utils import interpolate
 from tqdm           import tqdm
 from time           import perf_counter
 

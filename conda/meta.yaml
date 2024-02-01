@@ -1,9 +1,9 @@
 package:
-  name: p3droslo
+  name: pomme
   version: "0.0.15"
 
 about:
-  home: "https://github.com/Magritte-code/p3droslo"
+  home: "https://github.com/Magritte-code/pomme"
   license: GPLv3
   license_file: LICENSE
   summary: Probabilistic 3D Reconstruction of Spectral Line Observations.

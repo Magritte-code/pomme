@@ -1,4 +1,4 @@
-from p3droslo.utils import get_molar_mass
+from pomme.utils import get_molar_mass
 
 
 def test_get_molar_mass():

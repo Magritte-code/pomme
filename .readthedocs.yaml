@@ -16,7 +16,7 @@ build:
   tools:
     python: "3.9"
 
-# Install p3droslo
+# Install pomme
 python:
   install:
     - requirements: docs/src/requirements.txt

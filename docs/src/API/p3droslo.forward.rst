@@ -1,7 +1,7 @@
-p3droslo.forward
+pomme.forward
 ================
 
-.. automodule:: p3droslo.forward
+.. automodule:: pomme.forward
    :members:
    :undoc-members:
    :show-inheritance:
