@@ -576,7 +576,24 @@ class SphericalModel:
 
         # Setup rays
         self.image_ray_tracer()
- 
+
+
+    def diff_r(self, arr, rs):
+        # Prepend the one but first and append the one but last.
+        # (Such that the first and last difference are the same.)
+        ap0 = arr.index_select(dim=0, index=torch.tensor([0]))
+        ap1 = arr.index_select(dim=0, index=torch.tensor([1]))
+        am1 = arr.index_select(dim=0, index=torch.tensor([arr.size(0)-1]))
+        am2 = arr.index_select(dim=0, index=torch.tensor([arr.size(0)-2]))
+
+        pre = 2.0 * ap0 - ap1
+        app = 2.0 * am1 - am2
+
+        dr = rs.diff(prepend=torch.zeros(1))
+
+        # Return the second-order difference.
+        return (0.5 / dr) * ( arr.diff(prepend=pre) + arr.diff(append=app) )
+
 
     def get_velocity(self, model_1D):
         raise NotImplementedError('First implement and define get_velocity.')
@@ -644,8 +661,8 @@ class SphericalModel:
         temperature = self.get_temperature(self.model_1D)
         turbulence  = self.get_turbulence (self.model_1D)
 
-        # Surface area of the annulus at each impact parameter
-        dss = np.pi * (self.rs[1:] + self.rs[:-1]) * (self.rs[1:] - self.rs[:-1])
+        step = 5
+
 
         # Tensor for the intensities in each line
         Iss = torch.zeros((len(lines), len(frequencies[0])), dtype=torch.float64)
@@ -656,13 +673,18 @@ class SphericalModel:
             # Check that the number of frequencies is the same for all lines
             assert len(freq) == len(Iss[l])
 
+            b_prev = 0.0
+
             # For each impact parameter
-            for i in range(self.Nb):
+            for i in range(0, self.Nb, step):
                 
                 if self.rs[i] < r_max:
 
+                    # Impact parameter
+                    b = self.rs[i]
+
                     # Get boundary condition at this impact parameter
-                    img_bdy = self.get_boundary_condition(self.model_1D, frequency=freq, b=self.rs[i])
+                    img_bdy = self.get_boundary_condition(self.model_1D, frequency=freq, b=b)
 
                     # Get intensity at this impact parameter
                     I_loc = line.LTE_image_along_last_axis(
@@ -675,7 +697,12 @@ class SphericalModel:
                         img_bdy      = img_bdy
                     )
 
+                    # Surface area of the annulus at each impact parameter
+                    dss = np.pi * (b + b_prev) * (b - b_prev)
+
                     # Integrate this piece of the annulus
-                    Iss[l] += dss[i] * I_loc
+                    Iss[l] += dss * I_loc
+
+                    b_prev = b
                     
         return Iss

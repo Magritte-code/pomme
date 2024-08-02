@@ -8,20 +8,20 @@ from pomme.model import TensorModel, SphericalModel
 from pomme.utils import planck, T_CMB
 
 
-n_elements = 128
+n_elements = 1024
 
 r_in   = (1.0e-1 * units.au).si.value
 r_out  = (1.0e+4 * units.au).si.value
 
-v_in  = (1.0e+0 * units.km / units.s).si.value
+v_in  = (1.0e-1 * units.km / units.s).si.value
 v_inf = (2.0e+1 * units.km / units.s).si.value
 beta  = 0.5
 
 T_in    = (2.5e+3 * units.K).si.value
 epsilon = 0.6
 
-Mdot   = (1.0e-6 * units.M_sun / units.yr).si.value
-v_turb = (1.5e+0 * units.km    / units.s ).si.value
+Mdot   = (3.0e-6 * units.M_sun / units.yr).si.value
+v_turb = (1.0e+0 * units.km    / units.s ).si.value
 T_star = (2.5e+3 * units.K               ).si.value
 R_star = (1.0e+0 * units.au              ).si.value
 
@@ -32,6 +32,16 @@ rs = np.logspace(np.log10(r_in), np.log10(r_out), n_elements, dtype=np.float64)
 v = np.empty_like(rs)
 v[rs <= R_star] = 0.0
 v[rs >  R_star] = v_in + (v_inf - v_in) * (1.0 - R_star / rs[rs > R_star])**beta
+
+
+################################################################
+# Gaussian bump in mass-loss rate
+################################################################
+# r_shell = 0.001 * r_out
+# width   = 0.200 * r_shell
+# Mdot = Mdot * (1.0 + 10.0 * np.exp(-0.5*((rs-r_shell)/width)**2))
+################################################################
+
 
 rho  = Mdot / (4.0 * np.pi * rs**2 * v)
 n_CO = (3.0e-4 * constants.N_A.si.value / 2.02e-3) * rho
@@ -54,11 +64,11 @@ model.fix_all()
 model.save('model_truth.h5')
 
 # Line data
-lines = [Line('CO', i) for i in [0, 1, 3, 5]]
+lines = [Line('CO', i) for i in [2, 6]]
 
 # Frequency data
-vdiff = 300   # velocity increment size [m/s]
-nfreq = 100   # number of frequencies
+vdiff = 500   # velocity increment size [m/s]
+nfreq =  50   # number of frequencies
 
 velocities  = nfreq * vdiff * torch.linspace(-1, +1, nfreq, dtype=torch.float64)
 frequencies = [(1.0 + velocities / constants.c.si.value) * line.frequency for line in lines]
@@ -76,7 +86,7 @@ def get_velocity(model):
     R_star = torch.exp(model['log_R_star'])
     # Compute velocity
     v = torch.empty_like(r)
-    v[r <= R_star] = 0.0
+    v[r <= R_star] = v_in
     v[r >  R_star] = v_in + (v_inf - v_in) * (1.0 - R_star / r[r > R_star])**beta
     # Return
     return v

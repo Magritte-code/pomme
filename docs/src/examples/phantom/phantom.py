@@ -1,6 +1,6 @@
 import torch
 
-from astropy        import constants
+from astropy     import constants
 from pomme.lines import Line
 from pomme.utils import get_molar_mass, planck, T_CMB
 

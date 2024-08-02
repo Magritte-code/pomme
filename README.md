@@ -13,7 +13,7 @@ _Probabilistic 3D Reconstruction of Spectral Line Observations._
 *pomme* is a python package that allows you to create **probabilistic 3D reconstructions** of astronomical **spectral line observations**.
 
 Observations of [spectral lines](https://en.wikipedia.org/wiki/Spectral_line) are indespensible in astronomy, since they encode a wealth of information about the physical and chemical conditions of the medium from which they originate.
-For instance, their narrow extent in frequency space make them very sensitive to Doppler shifts, such that their shape encodes the motion of the medium along the line of sight.
+Their narrow extent in frequency space make them very sensitive to Doppler shifts, such that their shape encodes the motion of the medium along the line of sight.
 As a result, given a good model for the line formation process and an inversion method, these physical and chemical properties can be retrieved from observations.
 Currently, we mainly focus on retrieving the distributions of the abundance of the chemical species producing the line, the velocity field, and its kinetic temperature.
 However, also other parameters can be retrieved.
