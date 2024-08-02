@@ -26,7 +26,7 @@ It is currently developed and maintained by [Frederik De Ceuster](https://fredde
 
 ## Installation
 
-Get the latest release (version 0.0.15) either from [PyPI](https://pypi.org/project/pomme/), using `pip`, with:
+Get the latest release (version 0.0.16) either from [PyPI](https://pypi.org/project/pomme/), using `pip`, with:
 ```
 pip install pomme
 ```
