@@ -414,152 +414,152 @@ class TensorModel():
         
 
 
-class SphericallySymmetric():
-    """
-    Spherically Symmetric model functionality.
-    """
-    def __init__(self, model_1D):
-        """
-        Constructor for a spherically symmetric model from a 1D TensorModel.
-        """
-        # Check if the input model is in fact 1D
-        if model_1D.dimension != 1:
-            raise ValueError(f"Input model is not 1D. model_1D.dimension = {model_1D.dimension}.")
+# class SphericallySymmetric():
+#     """
+#     Spherically Symmetric model functionality.
+#     """
+#     def __init__(self, model_1D):
+#         """
+#         Constructor for a spherically symmetric model from a 1D TensorModel.
+#         """
+#         # Check if the input model is in fact 1D
+#         if model_1D.dimension != 1:
+#             raise ValueError(f"Input model is not 1D. model_1D.dimension = {model_1D.dimension}.")
 
-        # Define the underlying 1D and 2D models
-        self.model_1D = model_1D
-        self.model_2D = TensorModel(
-            sizes=(2*self.model_1D.sizes[0], self.model_1D.sizes[0]),
-            shape=(2*self.model_1D.shape[0], self.model_1D.shape[0])
-        )
+#         # Define the underlying 1D and 2D models
+#         self.model_1D = model_1D
+#         self.model_2D = TensorModel(
+#             sizes=(2*self.model_1D.sizes[0], self.model_1D.sizes[0]),
+#             shape=(2*self.model_1D.shape[0], self.model_1D.shape[0])
+#         )
         
-        # Set origin for the 2D model halfway along the x axis
-        self.origin_2D = np.array([0.5*(self.model_2D.shape[0]-1), 0.0])
+#         # Set origin for the 2D model halfway along the x axis
+#         self.origin_2D = np.array([0.5*(self.model_2D.shape[0]-1), 0.0])
 
-        # Get linear interpolation utilities
-        self.i_min, self.i_max, self.l = self.linint_utils(self.model_2D, self.origin_2D)
+#         # Get linear interpolation utilities
+#         self.i_min, self.i_max, self.l = self.linint_utils(self.model_2D, self.origin_2D)
     
-        # Get the circular weights
-        self.c_weights = self.get_circular_weights()
+#         # Get the circular weights
+#         self.c_weights = self.get_circular_weights()
 
 
-    def linint_utils(self, model, origin):
-        """
-        Getter for the linear interpolation utilities.
-        """
-        # Compute the radii in the 2D model
-        rs = torch.from_numpy(model.get_radius(origin=origin))
+#     def linint_utils(self, model, origin):
+#         """
+#         Getter for the linear interpolation utilities.
+#         """
+#         # Compute the radii in the 2D model
+#         rs = torch.from_numpy(model.get_radius(origin=origin))
 
-        # Compute the 2D radii in the 1D model
-        rs = (self.model_1D.shape[0] / self.model_1D.sizes[0]) * rs
+#         # Compute the 2D radii in the 1D model
+#         rs = (self.model_1D.shape[0] / self.model_1D.sizes[0]) * rs
 
-        # Compute the corresponding indices of the 2D radii in the 1D model
-        i_min = torch.floor(rs).type(torch.int64)
-        i_max = i_min + 1
+#         # Compute the corresponding indices of the 2D radii in the 1D model
+#         i_min = torch.floor(rs).type(torch.int64)
+#         i_max = i_min + 1
 
-        # Bound the indices from below
-        i_min[i_min < 0] = 0
-        i_max[i_max < 0] = 0
+#         # Bound the indices from below
+#         i_min[i_min < 0] = 0
+#         i_max[i_max < 0] = 0
 
-        # Bound the indices form above
-        i_min[i_min >= self.model_1D.shape[0]] = self.model_1D.shape[0]-1
-        i_max[i_max >= self.model_1D.shape[0]] = self.model_1D.shape[0]-1
+#         # Bound the indices form above
+#         i_min[i_min >= self.model_1D.shape[0]] = self.model_1D.shape[0]-1
+#         i_max[i_max >= self.model_1D.shape[0]] = self.model_1D.shape[0]-1
 
-        # Compute the scaling factor
-        l = rs - i_min.type(torch.float64)
+#         # Compute the scaling factor
+#         l = rs - i_min.type(torch.float64)
         
-        return i_min, i_max, l
+#         return i_min, i_max, l
         
          
-    def map_variables(self, keys):
-        """
-        Map a 1D Tensor Model variable to a 2D TensorModel variable assuming spherical symmetry.
-        """    
-        # Precompute the linear map
-        a = self.l
-        b = 1.0 - self.l
-        # Map variables
-        for key in keys:
-            if self.model_1D.is_field(key):
-                self.model_2D[key] = a*self.model_1D[key][self.i_max] + b*self.model_1D[key][self.i_min]
-            else:
-                self.model_2D[key] = self.model_1D[key]
+#     def map_variables(self, keys):
+#         """
+#         Map a 1D Tensor Model variable to a 2D TensorModel variable assuming spherical symmetry.
+#         """    
+#         # Precompute the linear map
+#         a = self.l
+#         b = 1.0 - self.l
+#         # Map variables
+#         for key in keys:
+#             if self.model_1D.is_field(key):
+#                 self.model_2D[key] = a*self.model_1D[key][self.i_max] + b*self.model_1D[key][self.i_min]
+#             else:
+#                 self.model_2D[key] = self.model_1D[key]
  
 
-    def map_1D_to_2D(self):
-        """
-        Map a 1D TensorModel to a 2D TensorModel assuming spherical symmetry.
-        """    
-        self.map_variables(self.model_1D.keys())
+#     def map_1D_to_2D(self):
+#         """
+#         Map a 1D TensorModel to a 2D TensorModel assuming spherical symmetry.
+#         """    
+#         self.map_variables(self.model_1D.keys())
 
         
-    def create_3D_model(self, sizes, shape, origin, detach=True):
-        """
-        Create a 3D TensorModel for the current spherically symmetric model, and given an origin.
-        If detach=True, as is by default, all model tensors will be detached form the the spherical model.
-        """
-        # Check sizes
-        if len(sizes) != 3:
-            raise ValueError("Provided sizes do not correspond to a 3D model.")
-        # Check shape
-        if len(shape) != 3:
-            raise ValueError("Provided shape does not correspond to a 3D model.")
-        # Create a 3D tensor model
-        model_3D = TensorModel(sizes=sizes, shape=shape)
-        # Compute the linear integration utilities
-        i_min, i_max, l = self.linint_utils(model_3D, origin)
-        # Precompute the linear map
-        a = l
-        b = 1.0 - l
-        # Map variables
-        for key in self.model_1D.keys():
-            if self.model_1D.is_field(key):
-                model_3D[key] = a*self.model_1D[key][i_max] + b*self.model_1D[key][i_min]
-            else:
-                model_3D[key] = self.model_1D[key].clone()
-            # If required, detach tensor from the compute graph
-            if detach:
-                model_3D[key].detach_()
-        # Return the 3D TensorModel
-        return model_3D
+#     def create_3D_model(self, sizes, shape, origin, detach=True):
+#         """
+#         Create a 3D TensorModel for the current spherically symmetric model, and given an origin.
+#         If detach=True, as is by default, all model tensors will be detached form the the spherical model.
+#         """
+#         # Check sizes
+#         if len(sizes) != 3:
+#             raise ValueError("Provided sizes do not correspond to a 3D model.")
+#         # Check shape
+#         if len(shape) != 3:
+#             raise ValueError("Provided shape does not correspond to a 3D model.")
+#         # Create a 3D tensor model
+#         model_3D = TensorModel(sizes=sizes, shape=shape)
+#         # Compute the linear integration utilities
+#         i_min, i_max, l = self.linint_utils(model_3D, origin)
+#         # Precompute the linear map
+#         a = l
+#         b = 1.0 - l
+#         # Map variables
+#         for key in self.model_1D.keys():
+#             if self.model_1D.is_field(key):
+#                 model_3D[key] = a*self.model_1D[key][i_max] + b*self.model_1D[key][i_min]
+#             else:
+#                 model_3D[key] = self.model_1D[key].clone()
+#             # If required, detach tensor from the compute graph
+#             if detach:
+#                 model_3D[key].detach_()
+#         # Return the 3D TensorModel
+#         return model_3D
 
     
-    def get_circular_weights(self):
-        """
-        Getter for the circular weights.
-        """
-        coords = self.model_2D.get_coords(origin=self.origin_2D)
-        r = coords[1,0]
-        r[0] = 0.5 * r[1]
-        return torch.from_numpy(2.0*np.pi*self.model_1D.dx(0)*r)
+#     def get_circular_weights(self):
+#         """
+#         Getter for the circular weights.
+#         """
+#         coords = self.model_2D.get_coords(origin=self.origin_2D)
+#         r = coords[1,0]
+#         r[0] = 0.5 * r[1]
+#         return torch.from_numpy(2.0*np.pi*self.model_1D.dx(0)*r)
     
     
-    def integrate_intensity(self, img):
-        """
-        Computes the integrated intensity.
-        """
-        return torch.einsum("if,i -> f", img, self.c_weights)
+#     def integrate_intensity(self, img):
+#         """
+#         Computes the integrated intensity.
+#         """
+#         return torch.einsum("if,i -> f", img, self.c_weights)
     
 
-    def plot(self, keys=None, exclude=[]):
-        """
-        Plot the model parameters.
-        """
-        # Pick which variables to plot
-        if keys is None:
-            keys = self.model_1D.keys()
-        # Get the radial coordinate of the model
-        r = self.model_1D.get_radius(origin=[0])
-        # Plot each 1D model variable
-        for key in keys:
-            if key not in exclude:
-                if self.model_1D.is_field(key):
-                    plt.figure(dpi=130)
-                    plt.plot(r, self.model_1D[key].data)
-                    plt.xlabel('r')
-                    plt.ylabel(key)
-                else:
-                    print(f"{key:<21}{self.model_1D[key].data}")
+#     def plot(self, keys=None, exclude=[]):
+#         """
+#         Plot the model parameters.
+#         """
+#         # Pick which variables to plot
+#         if keys is None:
+#             keys = self.model_1D.keys()
+#         # Get the radial coordinate of the model
+#         r = self.model_1D.get_radius(origin=[0])
+#         # Plot each 1D model variable
+#         for key in keys:
+#             if key not in exclude:
+#                 if self.model_1D.is_field(key):
+#                     plt.figure(dpi=130)
+#                     plt.plot(r, self.model_1D[key].data)
+#                     plt.xlabel('r')
+#                     plt.ylabel(key)
+#                 else:
+#                     print(f"{key:<21}{self.model_1D[key].data}")
         
 
 class SphericalModel:
