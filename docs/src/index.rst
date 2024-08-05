@@ -1,5 +1,5 @@
 pomme
-########
+#####
 
 Welcome to the *pomme* documentation!
 
@@ -7,6 +7,7 @@ Welcome to the *pomme* documentation!
    :maxdepth: 1
    :caption: Contents:
 
+   index
    background/index
    examples/index
    API/index
