@@ -7,4 +7,5 @@ Some examples showcasing the use of pomme.
    :maxdepth: 1
    :caption: Contents:
 
-   spherically_symmetric
+   1D_stellar_wind
+   3D_stellar_wind
