@@ -105,8 +105,10 @@ class Line:
         self.energy = torch.from_numpy(self.linedata.energy)
         self.weight = torch.from_numpy(self.linedata.weight)
         
+        self.description = f"{self.species_name}(J={self.J_upper}-{self.J_lower})"
+
         print(f"You have selected line:")
-        print(f"    {self.species_name}(J={self.J_upper}-{self.J_lower})")
+        print(f"    {self.description}")
         print(f"Please check the properties that were inferred:")
         print(f"    {'Frequency '       :<17} {self.frequency :0.9e}  Hz")
         print(f"    {'Einstein A coeff ':<17} {self.Einstein_A:0.9e}  1/s")
