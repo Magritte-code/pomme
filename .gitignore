@@ -7,6 +7,7 @@
 *.ascii
 *.pt
 docs/build/
+docs/examples/3D_stellar_wind_data/wind*
 
 !tests/data/header_only.fits
 
