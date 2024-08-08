@@ -566,7 +566,6 @@ class SphericalModel:
     """
     Spherically symmetric model.
     """
-
     def __init__(self, rs, model_1D, r_star=0.0):
 
         self.rs       = rs            # Radii of the spherical model
@@ -706,3 +705,56 @@ class SphericalModel:
                     b_prev = b
                     
         return Iss
+
+
+class GeneralModel:
+    """
+    General model class.
+    """
+    def __init__(self, model):        
+        self.model = model
+
+
+    def get_velocity(self, model):
+        raise NotImplementedError('First implement and define get_velocity.')
+
+
+    def get_temperature(self, model):
+        raise NotImplementedError('First implement and define get_temperature.')
+
+
+    def get_abundance(self, model, l):
+        raise NotImplementedError('First implement and define get_abundance.')
+
+
+    def get_turbulence(self, model):
+        raise NotImplementedError('First implement and define get_turbulence.')
+
+
+    def get_boundary_condition(self, model, frequency):
+        raise NotImplementedError('First implement and define get_boundary_condition.')
+
+
+    # Forward model
+    def image(self, lines, frequencies):
+
+        # Tensor for the intensities in each line
+        imgs = torch.zeros((len(lines), self.model.shape[0], self.model.shape[1], len(self.freqs[0])), dtype=torch.float64)
+
+        # For each line
+        for l, (line, freq) in enumerate(zip(lines, frequencies)):
+
+            # Check that the number of frequencies is the same for all lines
+            assert len(freq) == imgs[l].shape[-1]
+
+            imgs[l] = line.LTE_image_along_last_axis(
+                abundance    = self.get_abundance  (self.model, l),
+                temperature  = self.get_temperature(self.model),
+                v_turbulence = self.get_turbulence (self.model),
+                velocity_los = self.get_velocity   (self.model)[2],
+                frequencies  = freq,
+                dx           = self.model.dx(0),
+                img_bdy      = self.get_boundary_condition(self.model, freq)
+            )
+
+        return imgs

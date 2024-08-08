@@ -1,0 +1,16 @@
+# input file for wind setup routine
+        primary_mass =       1.500    ! primary star mass (Msun)
+        primary_racc =       1.220    ! primary star accretion radius (au)
+         primary_lum =       5315.    ! primary star luminosity (Lsun)
+        primary_Teff =       3000.    ! primary star effective temperature (K)
+        primary_Reff =  1.26675855    ! primary star effective radius (au)
+     icompanion_star =           1    ! set to 1 for a binary system, 2 for a triple system
+      secondary_mass =       1.000    ! secondary star mass (Msun)
+      secondary_racc =       0.040    ! secondary star accretion radius (au)
+       secondary_lum =       0.000    ! secondary star luminosity (Lsun)
+      secondary_Teff =       0.000    ! secondary star effective temperature)
+      secondary_Reff =       0.000    ! secondary star effective radius (au)
+     semi_major_axis =       6.000    ! semi-major axis of the binary system (au)
+        eccentricity =       0.000    ! eccentricity of the binary system
+   mass_of_particles =   1.000E-11    ! particle mass (Msun, overwritten if iwind_resolution <>0)
+          wind_gamma =       1.200    ! adiabatic index (initial if Krome chemistry used)
