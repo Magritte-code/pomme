@@ -6,7 +6,7 @@ from astropy    import units, constants
 from torch.nn   import functional
 from ipywidgets import interact
 
-
+# Cosmic Microwave Background temperature
 T_CMB = 2.725
 
 
@@ -36,7 +36,18 @@ def planck(temperature, frequency):
 
 def print_var(name, var):
     """
-    Print the min, mean, and max of a tensor.
+    Print the min, mean, and max of a PyTorch tensor variable.
+
+    Parameters
+    ----------
+    name : str
+        Name of the variable.
+    var : torch.Tensor
+        Variable to print the min, mean, and max of.
+
+    Returns
+    -------
+    out : None
     """
     print(f"{name} {var.min().item():+1.2e} {var.mean().item():+1.2e} {var.max().item():+1.2e}")
 
@@ -44,6 +55,20 @@ def print_var(name, var):
 def interpolate(inp, size, mode='nearest'):
     """
     Interpolate a tensor to a new size.
+
+    Parameters
+    ----------
+    inp : torch.Tensor
+        Input tensor to interpolate.
+    size : tuple
+        New size of the tensor.
+    mode : str
+        Interpolation mode.
+    
+    Returns
+    -------
+    out : torch.Tensor
+        Interpolated tensor.
     """
     # Reshape to add batch ids and channels
     # (Because that is what torch.nn.functional.interpolate expects.)
@@ -58,6 +83,18 @@ def interpolate(inp, size, mode='nearest'):
 def convert_angular_to_spatial(angle, distance):
     """
     Convert angles to distances assuming a certain distance.
+
+    Parameters
+    ----------
+    angle : astropy.units.Quantity
+        Angle to convert.
+    distance : astropy.units.Quantity
+        Distance to assume.
+
+    Returns
+    -------
+    out : astropy.units.Quantity
+        Distance corresponding to the angle at the given distance.
     """
     angle    = angle   .to(units.arcsec).value
     distance = distance.to(units.pc    ).value
@@ -99,7 +136,19 @@ MM_of_Elements = {
 def get_molar_mass(compound: str, decimal_places=None) -> float:
     """
     Compute the molar mass based on a chemical formula.
-    from https://gist.github.com/elibroftw/22e3b4c1eb7fa0a6c83d099d24200f95
+    Adapted from https://gist.github.com/elibroftw/22e3b4c1eb7fa0a6c83d099d24200f95
+
+    Parameters
+    ----------
+    compound : str
+        Chemical formula to compute the molar mass of.
+    decimal_places : int
+        Number of decimal places to round the molar mass to.
+    
+    Returns
+    -------
+    out : float
+        Molar mass of the compound.
     """
     is_polyatomic = end = multiply = False
     polyatomic_mass, m_m, multiplier = 0, 0, 1

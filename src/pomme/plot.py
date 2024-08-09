@@ -7,6 +7,15 @@ from ipywidgets import interact
 def plot_cube_2D(cube):
     """
     Plot a slice along the third axis through a 3D cube.
+
+    Parameters
+    ----------
+    cube : torch.Tensor
+        3D cube to plot.
+    
+    Returns
+    -------
+    out : None
     """
     vmin = cube.min().item()
     vmax = cube.max().item()
@@ -19,6 +28,15 @@ def plot_cube_2D(cube):
 def plot_spectrum(cube):
     """
     Plot spectrum at a pixel for this observation.
+
+    Parameters
+    ----------
+    cube : torch.Tensor
+        3D cube to plot the spectrum of.
+    
+    Returns
+    -------
+    out : None
     """
     # Define a plot function
     ymin = cube.min().item()
