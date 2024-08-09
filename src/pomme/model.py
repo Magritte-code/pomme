@@ -48,7 +48,20 @@ class TensorModel():
         self.coords = None
         # Set dtau_warning_threshold
         self.dtau_warning_threshold = dtau_warning_threshold
-    
+
+
+    def deepcopy(self):
+        """
+        Create a deep copy of the TensorModel.
+        """
+        # Create a new TensorModel
+        m = TensorModel(sizes=self.sizes, shape=self.shape, dtau_warning_threshold=self.dtau_warning_threshold)
+        # Deepcopy all variables
+        for key in self.keys():
+            m[key] = self[key].detach().clone()
+        # Return the new model
+        return m
+
 
     def dim(self):
         """
@@ -707,6 +720,28 @@ class SphericalModel:
         return Iss
 
 
+    def plot(self, keys=None, exclude=[]):
+        """
+        Plot the model parameters.
+        """
+        # Pick which variables to plot
+        if keys is None:
+            keys = self.model_1D.keys()
+        # Get the radial coordinate of the model
+        r = self.model_1D.get_radius(origin=[0])
+        # Plot each 1D model variable
+        for key in keys:
+            if key not in exclude:
+                if self.model_1D.is_field(key):
+                    plt.figure(dpi=130)
+                    plt.plot(r, self.model_1D[key].data)
+                    plt.xlabel('r')
+                    plt.ylabel(key)
+                else:
+                    print(f"{key:<21}{self.model_1D[key].data}")
+        
+
+
 class GeneralModel:
     """
     General model class.
@@ -739,7 +774,7 @@ class GeneralModel:
     def image(self, lines, frequencies):
 
         # Tensor for the intensities in each line
-        imgs = torch.zeros((len(lines), self.model.shape[0], self.model.shape[1], len(self.freqs[0])), dtype=torch.float64)
+        imgs = torch.zeros((len(lines), self.model.shape[0], self.model.shape[1], len(frequencies[0])), dtype=torch.float64)
 
         # For each line
         for l, (line, freq) in enumerate(zip(lines, frequencies)):
