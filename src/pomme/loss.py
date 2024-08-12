@@ -12,6 +12,11 @@ class Loss():
     def __init__(self, keys=[]):
         """
         Constructor for loss.
+
+        Parameters
+        ----------
+        keys : list
+            List of keys for the losses.
         """
         # Store keys
         self.keys = keys
@@ -26,6 +31,9 @@ class Loss():
 
 
     def reset(self):
+        """
+        Reset all losses and remove all stored losses.
+        """
         # Provide entries for all losses, norm, and weight
         self.losses = {key:[] for key in self.keys}
         # Provide entries for tot loss
@@ -36,6 +44,16 @@ class Loss():
     def __getitem__(self, key):
         """
         Getter for variables (vars). Allows the use of [] operators.
+
+        Parameters
+        ----------
+        key : str
+            Key of the variable to be returned.
+
+        Returns
+        -------
+        torch.Tensor
+            The requested variable.
         """
         return self.loss[key]
     
@@ -43,6 +61,18 @@ class Loss():
     def __setitem__(self, key, value):
         """
         Setter for variables (vars). Allows the use of [] operators.
+
+        Parameters
+        ----------
+        key : str
+            Key of the variable to be set.
+        value : torch.Tensor
+            Value to be set.
+
+        Raises
+        ------
+        ValueError
+            If the value is not a torch.Tensor.
         """
         if isinstance(value, torch.Tensor):
             # weight
@@ -58,7 +88,12 @@ class Loss():
 
     def renormalise(self, key):
         """
-        Reset the norm to one over the current loss
+        Reset the norm to one over the current loss.
+
+        Parameters
+        ----------
+        key : str
+            Key of the variable to be renormalised.
         """
         self.norm[key] *= 1.0 / self.loss[key].item()
 
@@ -100,20 +135,23 @@ class Loss():
         plt.legend()
         
         
-def haar_loss_1D(a):
+def haar_loss_1D(arr):
+    """
+    Loss based on the Haar wavelet transform.
+    """
     loss = torch.zeros(1)
-    while len(a) > 1:
-        loss += nn.functional.mse_loss(a[0::2], a[1::2]) * len(a)
-        a = 0.5*(a[0::2] + a[1::2])
+    while len(arr) > 1:
+        loss += nn.functional.mse_loss(arr[0::2], arr[1::2]) * len(arr)
+        arr = 0.5*(arr[0::2] + arr[1::2])
     return loss
 
 
-def fourier_loss_1D(a):
+def fourier_loss_1D(arr):
     """
     Loss based on the (1D) Fourier transform.
     """
     # Take the (real) Fast Fourier Transform
-    fft = torch.abs(torch.fft.rfft(a))
+    fft = torch.abs(torch.fft.rfft(arr))
     # Store the size of the resulting transform
     size = fft.size(0)
     # Define the weights
@@ -136,10 +174,25 @@ def diff_loss(arr):
 
 class SphericalLoss:
     """
-    Copmutes the deviation from spherical symmetry. 
+    Copmutes the deviation from spherical symmetry.
+    This is quantified as the variacne of the data in each radial bin.
     """
-
     def __init__(self, model, origin='centre', weights=None):
+        """
+        Constructor for the spherical loss.
+
+        Parameters
+        ----------
+        model : TensorModel
+            TensorModel object on which the loss should be applied.
+        origin : array_like or str
+            Origin of the spherical coordinates, given as indices of the origin
+            of the coordinate system (can be float).
+            The dimension of the origin should match the dimension of the model.
+            If 'centre', the origin is set to the centre of the model.
+        weights : torch.Tensor, optional
+            Weights for the radial bins. If None, the weights are set to one.
+        """
         # Get radial coordinates w.r.t. the given origin.
         r = model.get_radius(origin=origin)
         # Define the number of radial bins.
@@ -157,7 +210,21 @@ class SphericalLoss:
         else:
             self.weights = weights
 
+
     def eval(self, var):
+        """
+        Evaluate the spherical loss.
+
+        Parameters
+        ----------
+        var : torch.Tensor
+            Variable for which the loss should be evaluated.
+
+        Returns
+        -------
+        torch.Tensor
+            The spherical loss for the given variable.
+        """
         # Compute the standard deviation of the variable data in each radial bin.
         sph_std = torch.zeros(self.N)
         for i in range(self.N):
@@ -165,12 +232,12 @@ class SphericalLoss:
         return torch.mean(self.weights * sph_std)
 
 
-def steady_state_continuity_loss(model, rho, v_x, v_y, v_z):
-    """
-    Loss assuming steady state hydrodynamics, i.e. vanishing time derivatives in Euler's equations.
-    """
-    # Continuity equation (steady state): div(ρ v) = 0
-    loss_cont = model.diff_x(rho * v_x) + model.diff_y(rho * v_y) + model.diff_z(rho * v_z)
-    # Squared average over the model
-    loss_cont = torch.mean((loss_cont / rho)**2)
-    return loss_cont
+# def steady_state_continuity_loss(model, rho, v_x, v_y, v_z):
+#     """
+#     Loss assuming steady state hydrodynamics, i.e. vanishing time derivatives in Euler's equations.
+#     """
+#     # Continuity equation (steady state): div(ρ v) = 0
+#     loss_cont = model.diff_x(rho * v_x) + model.diff_y(rho * v_y) + model.diff_z(rho * v_z)
+#     # Squared average over the model
+#     loss_cont = torch.mean((loss_cont / rho)**2)
+#     return loss_cont

@@ -79,6 +79,19 @@ class Line:
     def __init__(self, species_name, transition, database='LAMDA', datafile=None, molar_mass=None):
         """
         Constructor for a line object.
+
+        Parameters
+        ----------
+        species_name : str
+            Name of the line producing species.
+        transition : int
+            Transition number of the line.
+        database : str
+            Name of the type of line data base. (Default LAMDA.)
+        datafile : str
+            Path to the datafile. (Default None.)
+        molar_mass : float
+            Molar mass of the species. (Default None.)
         """
         # Store the name of the species
         self.species_name = species_name
@@ -118,6 +131,18 @@ class Line:
     def gaussian_width(self, temperature, v_turbulence):
         """
         Gaussian spectral line width.
+
+        Parameters
+        ----------
+        temperature : torch.Tensor
+            Temperature for which to evaluate the line width.
+        v_turbulence : torch.Tensor
+            Turbulent velocity for which to evaluate the line width.
+
+        Returns
+        -------
+        out : torch.Tensor
+            Tensor containing the Gaussian line width for the given temperature and turbulent velocity
         """
         # Compute convenience variables
         factor_1 = self.frequency / CC
@@ -129,6 +154,20 @@ class Line:
     def gaussian_profile(self, temperature, v_turbulence, freq):
         """
         Gaussian spectral line profile function.
+
+        Parameters
+        ----------
+        temperature : torch.Tensor
+            Temperature for which to evaluate the line profile.
+        v_turbulence : torch.Tensor
+            Turbulent velocity for which to evaluate the line profile.
+        freq : torch.Tensor
+            Frequency at which to evaluate the line profile.
+
+        Returns
+        -------
+        out : torch.Tensor
+            Tensor containing the Gaussian line profile for the given temperature and turbulent velocity
         """
         # Compute convenience variables
         inverse_width = 1.0 / self.gaussian_width(temperature, v_turbulence)
@@ -210,8 +249,14 @@ class Line:
         
         Parameters
         ----------
+        abundance : torch.Tensor
+            Abundance distribution of the line producing species.
         temperature : torch.Tensor
             Temperature for which to evaluate the LTE level populations.
+        v_turbulence : torch.Tensor
+            Turbulent velocity for which to evaluate the line profile.
+        frequencies : torch.Tensor
+            Frequencies at which to evaluate the LTE emissivities and opacities.
     
         Returns
         -------
@@ -252,68 +297,92 @@ class Line:
         return (eta, chi)
     
 
-    def optical_depth_along_last_axis_slow(self, chi_ij, abundance, temperature, v_turbulence, velocity_los, frequencies, dx):
-        """
-        Line optical depth along the last axis.
-        """
-        sqrt_pi = np.sqrt(np.pi)
+    # def optical_depth_along_last_axis_slow(self, chi_ij, abundance, temperature, v_turbulence, velocity_los, frequencies, dx):
+    #     """
+    #     Line optical depth along the last axis.
+    #     """
+    #     sqrt_pi = np.sqrt(np.pi)
 
-        # Compute inverse line width
-        inverse_width = 1.0 / self.gaussian_width(temperature=temperature, v_turbulence=v_turbulence)
+    #     # Compute inverse line width
+    #     inverse_width = 1.0 / self.gaussian_width(temperature=temperature, v_turbulence=v_turbulence)
   
-        # Get the index of the last spatial axis
-        last_axis = abundance.dim() - 1
+    #     # Get the index of the last spatial axis
+    #     last_axis = abundance.dim() - 1
 
-        # Compute the Doppler shift for each element
-        shift = 1.0 + velocity_los * (1.0 / CC)
+    #     # Compute the Doppler shift for each element
+    #     shift = 1.0 + velocity_los * (1.0 / CC)
 
-        # Create freqency tensor in the rest frame for each element
-        freqs_restframe = torch.einsum("..., f -> ...f", shift, frequencies)
+    #     # Create freqency tensor in the rest frame for each element
+    #     freqs_restframe = torch.einsum("..., f -> ...f", shift, frequencies)
 
-        # Define the a and b (tabulated) functions
-        a = (1.0/sqrt_pi) * inverse_width * chi_ij * abundance
-        a = torch.einsum("...,    f -> ...f", a, torch.ones_like(frequencies))
-        b = torch.einsum("..., ...f -> ...f", inverse_width, freqs_restframe - self.frequency)
+    #     # Define the a and b (tabulated) functions
+    #     a = (1.0/sqrt_pi) * inverse_width * chi_ij * abundance
+    #     a = torch.einsum("...,    f -> ...f", a, torch.ones_like(frequencies))
+    #     b = torch.einsum("..., ...f -> ...f", inverse_width, freqs_restframe - self.frequency)
 
-        a0 = a[..., :-1, :]
-        a1 = a[..., 1: , :]
+    #     a0 = a[..., :-1, :]
+    #     a1 = a[..., 1: , :]
     
-        b0 = b[..., :-1, :]
-        b1 = b[..., 1: , :]
+    #     b0 = b[..., :-1, :]
+    #     b1 = b[..., 1: , :]
 
-        b10 = b1 - b0
+    #     b10 = b1 - b0
 
-        # threashhold differentiating the two regimes (large and small Doppler shift)
-        shift_threshold = 1.0e-3
+    #     # threashhold differentiating the two regimes (large and small Doppler shift)
+    #     shift_threshold = 1.0e-3
     
-        # Define the masks for the threashold    
-        A = torch.Tensor(torch.abs(b10) >  shift_threshold)
-        B = torch.Tensor(torch.abs(b10) <= shift_threshold)
+    #     # Define the masks for the threashold    
+    #     A = torch.Tensor(torch.abs(b10) >  shift_threshold)
+    #     B = torch.Tensor(torch.abs(b10) <= shift_threshold)
 
-        dtau = torch.empty_like(b10)
+    #     dtau = torch.empty_like(b10)
         
-        dtau[A]  =           (      a1[A] -       a0[A]) * (torch.exp(-b0[A]**2) - torch.exp(-b1[A]**2))
-        dtau[A] += sqrt_pi * (b0[A]*a1[A] - b1[A]*a0[A]) * (torch.erf( b0[A]   ) - torch.erf( b1[A]   ))
-        dtau[A] *= 0.5 / b10[A]**2
+    #     dtau[A]  =           (      a1[A] -       a0[A]) * (torch.exp(-b0[A]**2) - torch.exp(-b1[A]**2))
+    #     dtau[A] += sqrt_pi * (b0[A]*a1[A] - b1[A]*a0[A]) * (torch.erf( b0[A]   ) - torch.erf( b1[A]   ))
+    #     dtau[A] *= 0.5 / b10[A]**2
 
-        dtau[B]  = (1.0/ 2.0) * (a0[B] +     a1[B])
-        dtau[B] -= (1.0/ 3.0) * (a0[B] + 2.0*a1[B]) * b0[B]                        * b10[B]   
-        dtau[B] += (1.0/12.0) * (a0[B] + 3.0*a1[B]) *         (2.0*b0[B]**2 - 1.0) * b10[B]**2
-        dtau[B] -= (1.0/30.0) * (a0[B] + 4.0*a1[B]) * b0[B] * (2.0*b0[B]**2 - 3.0) * b10[B]**3
-        dtau[B] *= torch.exp(-b0[B]**2)
+    #     dtau[B]  = (1.0/ 2.0) * (a0[B] +     a1[B])
+    #     dtau[B] -= (1.0/ 3.0) * (a0[B] + 2.0*a1[B]) * b0[B]                        * b10[B]   
+    #     dtau[B] += (1.0/12.0) * (a0[B] + 3.0*a1[B]) *         (2.0*b0[B]**2 - 1.0) * b10[B]**2
+    #     dtau[B] -= (1.0/30.0) * (a0[B] + 4.0*a1[B]) * b0[B] * (2.0*b0[B]**2 - 3.0) * b10[B]**3
+    #     dtau[B] *= torch.exp(-b0[B]**2)
         
-        dtau *= dx
+    #     dtau *= dx
 
-        tau = torch.empty_like(b)
-        tau[...,  0 , :] = 0.0
-        tau[..., +1:, :] = torch.cumsum(dtau, dim=last_axis)
+    #     tau = torch.empty_like(b)
+    #     tau[...,  0 , :] = 0.0
+    #     tau[..., +1:, :] = torch.cumsum(dtau, dim=last_axis)
 
-        return dtau, tau
+    #     return dtau, tau
 
 
     def optical_depth_along_last_axis(self, chi_ij, abundance, temperature, v_turbulence, velocity_los, frequencies, dx):
         """
         Line optical depth along the last axis.
+
+        Parameters
+        ----------
+        chi_ij : torch.Tensor
+            Line opacity distribution.
+        abundance : torch.Tensor
+            Abundance distribution of the line producing species.
+        temperature : torch.Tensor
+            Temperature distribution of the line producing species.
+        v_turbulence : torch.Tensor
+            Turbulent velocity distribution.
+        velocity_los : torch.Tensor
+            Line of sight velocity distribution.
+        frequencies : torch.Tensor
+            Frequencies at which to compute the optical depth.
+        dx : torch.Tensor
+            Grid spacing along the line of sight.
+
+        Returns
+        -------
+        dtau : torch.Tensor
+            Tensor containing the differential optical depth.
+        tau : torch.Tensor
+            Tensor containing the cumulative optical depth.
         """
         sqrt_pi = np.sqrt(np.pi)
 
@@ -401,9 +470,33 @@ class Line:
     
     def image_along_last_axis(self, pop, abundance, temperature, v_turbulence, velocity_los, frequencies, dx, img_bdy):
         """
-        Create an image along the last data axis
-        """
+        Create an image along the last data axis.
 
+        Parameters
+        ----------
+        pop : torch.Tensor
+            Level populations for the line producing species.
+        abundance : torch.Tensor
+            Abundance distribution of the line producing species.
+        temperature : torch.Tensor
+            Temperature distribution of the line producing species.
+        v_turbulence : torch.Tensor
+            Turbulent velocity distribution.
+        velocity_los : torch.Tensor
+            Line of sight velocity distribution.
+        frequencies : torch.Tensor
+            Frequencies at which to image the model.
+        dx : torch.Tensor
+            Grid spacing along the line of sight.
+        img_bdy : torch.Tensor
+            Boundary conditions for the image.
+    
+        Returns
+        -------
+        img : torch.Tensor
+            Tensor containing the image of the model.
+        """
+        # Compute the line emissivity and opacity from the level populations
         eta_ij, chi_ij = self.emissivity_and_opacity_ij(pop=pop)
 
         # if eta_ij.isnan().any() or chi_ij.isnan().any():
@@ -433,7 +526,29 @@ class Line:
     # @torch.compile
     def LTE_image_along_last_axis(self, abundance, temperature, v_turbulence, velocity_los, frequencies, dx, img_bdy):
         """
-        Create an image along the last data axis, assuming LTE level populations
+        Create an image along the last data axis, assuming LTE level populations.
+
+        Parameters
+        ----------
+        abundance : torch.Tensor
+            Abundance distribution of the line producing species.
+        temperature : torch.Tensor
+            Temperature distribution of the line producing species.
+        v_turbulence : torch.Tensor
+            Turbulent velocity distribution.
+        velocity_los : torch.Tensor
+            Line of sight velocity distribution.
+        frequencies : torch.Tensor
+            Frequencies at which to image the model.
+        dx : torch.Tensor
+            Grid spacing along the line of sight.
+        img_bdy : torch.Tensor
+            Boundary conditions for the image.
+        
+        Returns
+        -------
+        img : torch.Tensor
+            Tensor containing the image of the model.
         """
 
         pop = self.LTE_pops(
@@ -466,5 +581,17 @@ class Line:
     def freq_to_velo(self, freq, unit='m/s'):
         """
         Convert frequencies with respect to this line to velocities.
+
+        Parameters
+        ----------
+        freq : torch.Tensor
+            Frequency tensor to convert.
+        unit : str
+            Unit of the velocity. (Default 'm/s'.)
+
+        Returns
+        -------
+        out : torch.Tensor
+            Tensor containing the velocities corresponding to the given frequencies.
         """
         return (freq / (self.frequency * units.Hz) - 1.0) * constants.c.to(unit).value

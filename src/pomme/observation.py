@@ -9,21 +9,25 @@ from radio_beam          import Beam as RadioBeam
 from astropy.convolution import convolve
 
 
-class Observation:
-    
-    def __init__(self):
-        
-        print('Created an Observation object!')
+# class Observation:    
+#     def __init__(self):
+#         print('Created an Observation object!')
         
 
 class DataCube():
     """
     Data structure for a data cube of spectral line images.
+    Helps to conveniently read and visualize spectral line images.
     """
     
     def __init__(self, fits_file):
         """
         Constructor for DataCube.
+
+        Parameters
+        ----------
+        fits_file : str
+            Path to the fits file containing the spectral line image.
         """
         self.read_fits_file(fits_file)
     
@@ -31,6 +35,11 @@ class DataCube():
     def read_fits_file(self, fits_file):
         """
         Reader for fits files containing spectral line images.
+
+        Parameters
+        ----------
+        fits_file : str
+            Path to the fits file containing the spectral line image.
         """
         #Load the data
         with fits.open(fits_file) as hdu:
@@ -163,7 +172,14 @@ class DataCube():
 class Beam():
     
     def __init__(self, datacube):
+        """
+        Constructor for Beam.
 
+        Parameters
+        ----------
+        datacube : DataCube
+            DataCube object containing the spectral line image.
+        """
         if abs(datacube.pixsize_x) != abs(datacube.pixsize_y):
             raise ValueError("Pixels are not square! Cannot handle non-square pixels!")
 
@@ -178,6 +194,19 @@ class Beam():
 
 
     def get_torch_kernel(self, pixsize):
+        """
+        Getter for the beam of the observation as a torch kernel.
+        
+        Parameters
+        ----------
+        pixsize : float
+            Pixel size in the same units as the beam.
+
+        Returns
+        -------
+        torch_kernel : torch.nn.Conv2d
+            Torch kernel object.
+        """
     
         # First create a kernel object
         kernel = self.object.as_kernel(pixsize) 
@@ -202,6 +231,16 @@ class Beam():
     def apply(self, image):
         """
         Apply beam kernel to image.
+
+        Parameters
+        ----------
+        image : np.ndarray
+            Image to apply the beam to.
+
+        Returns
+        -------
+        convolved_image : np.ndarray
+            Input image convolved with the beam.
         """
         return convolve(image, self.kernel.array)
     
@@ -210,6 +249,16 @@ class Beam():
         """
         Apply torch kernel.
         Assumes the last axis to contain the frequencies / channels.
+
+        Parameters
+        ----------
+        data : torch.Tensor
+            Data to apply the beam to.
+
+        Returns
+        -------
+        dat : torch.Tensor
+            Data convolved with the beam.
         """
         dat = torch.moveaxis(data, -1, 0).view(data.shape[2], 1, data.shape[0], data.shape[1])
         dat = self.torch_kernel(dat)

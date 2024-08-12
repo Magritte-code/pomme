@@ -11,6 +11,16 @@ from time           import perf_counter
 def make_object_with_len(obj):
     """
     Turn object into a tuple if it does not have a __len__ attribute.
+
+    Parameters
+    ----------
+    obj: object
+        Object to be turned into a tuple if it does not have a __len__ attribute.
+
+    Returns
+    -------
+    obj: object
+        Object turned into a tuple if it does not already had a __len__ attribute.
     """
     if hasattr(obj, "__len__"):
         return obj
@@ -20,13 +30,29 @@ def make_object_with_len(obj):
 
 class TensorModel():
     """
-    A (deterministic) model in which every variable is represented by a tensor.
+    A (deterministic) model in which every variable is represented by a PyTorch tensor.
     """
     reserved_keys = ["shape", "sizes", "free"]
     
     def __init__(self, sizes, shape, keys=[], dtau_warning_threshold=0.5):
         """
-        Initialise a Tensor model.
+        Constructor for a Tensor model object.
+
+        Parameters
+        ----------
+        sizes: array_like
+            The sizes of the model box.
+        shape: array_like
+            The shape of the Tensor variables.
+        keys: list (optional)
+            List of keys for the model variables.
+        dtau_warning_threshold: float (optional)
+            Threshold for the optical depth at which a warning is issued.
+
+        Raises
+        ------
+        ValueError
+            If the sizes and shape have a different number of dimensions.
         """
         # Check the keys
         for key in keys:
@@ -73,6 +99,16 @@ class TensorModel():
     def __getitem__(self, key):
         """
         Getter for variables (vars). Allows the use of [] operators.
+
+        Parameters
+        ----------
+        key: str
+            Key of the variable to be returned.
+
+        Returns
+        -------
+        torch.Tensor
+            The requested variable.
         """
         return self.vars[key]
     
@@ -80,6 +116,18 @@ class TensorModel():
     def __setitem__(self, key, value):
         """
         Setter for variables (vars). Allows the use of [] operators.
+
+        Parameters
+        ----------
+        key: str
+            Key of the variable to be set.
+        value: torch.Tensor
+            The value to be set.
+        
+        Raises
+        ------
+        ValueError
+            If the key is a reserved key word.
         """
         if key in TensorModel.reserved_keys:
             raise ValueError(f"{key} is a reserved key word, please choose a different one.")
@@ -108,6 +156,16 @@ class TensorModel():
     def dx(self, i):
         """
         Return the size of a model element.
+
+        Parameters
+        ----------
+        i: int
+            Index of the dimension.
+
+        Returns
+        -------
+        dx: float
+            Size of the model element along axis or dimension i.
         """
         return self.sizes[i] / self.shape[i]
     
@@ -126,27 +184,39 @@ class TensorModel():
         return self.dx(axis) * torch.sum(var, dim=axis)
 
     
-    def create_image(self, eta, chi, axis=0):
-        """
-        Formal solution of the transfer equation (discretised as TensorModel)
-        """
-        # Check for numercial issues.
-        dtau_max = chi.max() * self.dx(axis)
-        if dtau_max > self.dtau_warning_threshold:
-            print('WARNING:')
-            print(f'  dtau_max > {self.dtau_warning_threshold}, which might lead to numerical difficulties (dtau_max = {dtau_max})!')
-        if chi.min() < 0.0:
-            print('WARNING:')
-            print(f'  Negative opacities encountered, which might lead to numerical difficulties!')
-        # Compute the optical depth and the emerging intensity.
-        tau = self.integrate    (chi,                 axis=axis)
-        img = self.integrate_out(eta*torch.exp(-tau), axis=axis)
-        return img
+    # def create_image(self, eta, chi, axis=0):
+    #     """
+    #     Formal solution of the transfer equation (discretised as TensorModel)
+    #     """
+    #     # Check for numercial issues.
+    #     dtau_max = chi.max() * self.dx(axis)
+    #     if dtau_max > self.dtau_warning_threshold:
+    #         print('WARNING:')
+    #         print(f'  dtau_max > {self.dtau_warning_threshold}, which might lead to numerical difficulties (dtau_max = {dtau_max})!')
+    #     if chi.min() < 0.0:
+    #         print('WARNING:')
+    #         print(f'  Negative opacities encountered, which might lead to numerical difficulties!')
+    #     # Compute the optical depth and the emerging intensity.
+    #     tau = self.integrate    (chi,                 axis=axis)
+    #     img = self.integrate_out(eta*torch.exp(-tau), axis=axis)
+    #     return img
     
 
     def diff(self, arr, axis=-1):
         """
         Derivative along an axis.
+
+        Parameters
+        ----------
+        arr: torch.Tensor
+            The array for which to compute the derivative.
+        axis: int (optional)
+            The axis along which to compute the derivative.
+
+        Returns
+        -------
+        diff: torch.Tensor
+            The derivative along the specified axis.
         """
         # Prepend the one but first and append the one but last.
         # (Such that the first and last difference are the same.)
@@ -163,6 +233,16 @@ class TensorModel():
     def diff_x(self, arr):
         """
         Derivtive along x axis.
+
+        Parameters
+        ----------
+        arr: torch.Tensor
+            The array for which to compute the derivative.
+
+        Returns
+        -------
+        diff_x: torch.Tensor
+            The derivative along the x axis.
         """
         return self.diff(arr, axis=0)
     
@@ -170,6 +250,16 @@ class TensorModel():
     def diff_y(self, arr):
         """
         Derivtive along y axis.
+
+        Parameters
+        ----------
+        arr: torch.Tensor
+            The array for which to compute the derivative.
+
+        Returns
+        -------
+        diff_y: torch.Tensor
+            The derivative along the y axis.
         """
         return self.diff(arr, axis=1)
 
@@ -177,6 +267,16 @@ class TensorModel():
     def diff_z(self, arr):
         """
         Derivtive along z axis.
+
+        Parameters
+        ----------
+        arr: torch.Tensor
+            The array for which to compute the derivative.
+
+        Returns
+        -------
+        diff_z: torch.Tensor
+            The derivative along the z axis.
         """
         return self.diff(arr, axis=2)
 
@@ -191,6 +291,18 @@ class TensorModel():
     def origin_as_index_array(self, origin):
         """
         Convert origin to a numpy array.
+
+        Parameters
+        ----------
+        origin: array_like or str
+            Indices of the origin of the coordinate system (can be float).
+            The dimension of the origin should match the dimension of the model.
+            If 'centre', the origin is set to the centre of the model.
+
+        Returns
+        -------
+        origin: numpy array
+            indices of the origin of the coordinate system.
         """
         if isinstance(origin, str) and (origin == 'centre'):
             return 0.5 * (np.array(self.shape) - 1)
@@ -205,8 +317,14 @@ class TensorModel():
         Parameters
         ----------
         origin: array_like
-            indices of the origin of the coordinate system (can be float).
+            Indices of the origin of the coordinate system (can be float).
             The dimension of the origin should match the dimension of the model.
+            If 'centre', the origin is set to the centre of the model.
+
+        Returns
+        -------
+        coords: numpy array
+            coordinates of each location in the tensor model.
         """
         # Cast origin into a numpy array
         self.origin = self.origin_as_index_array(origin)
@@ -225,6 +343,18 @@ class TensorModel():
     def get_radius(self, origin='centre'):
         """
         Getter for the radial cooridnate of each location.
+
+        Parameters
+        ----------
+        origin: array_like
+            indices of the origin of the coordinate system (can be float).
+            The dimension of the origin should match the dimension of the model.
+            If 'centre', the origin is set to the centre of the model.
+        
+        Returns
+        -------
+        radius: numpy array
+            radial coordinate of each location in the tensor model. 
         """
         # Check if coords are already set
         if (self.coords is None) or not np.all(self.origin_as_index_array(origin) == self.origin):
@@ -236,9 +366,20 @@ class TensorModel():
             return np.linalg.norm(self.coords, axis=0)
         
 
-    def get_radial_direction(self, origin=None):
+    def get_radial_direction(self, origin='centre'):
         """
         Getter for the radial direction of the model.
+
+        Parameters
+        ----------
+        origin: array_like (optional)
+            indices of the origin of the coordinate system (can be float).
+            The dimension of the origin should match the dimension of the model.
+
+        Returns
+        -------
+        direction: numpy array
+            radial directions of each element in the model.
         """    
         coords = self.get_coords(origin)
         radius = self.get_radius(origin)
@@ -251,6 +392,20 @@ class TensorModel():
     def apply(self, func, exclude=[], include=[]):
         """
         Apply the given functional to all model variables.
+
+        Parameters
+        ----------
+        func: function
+            The function to be applied to the model variables.
+        exclude: list (optional)
+            List of keys to exclude from the application of the function.
+        include: list (optional)
+            List of variables to include in the application of the function.
+        
+        Returns
+        -------
+        res: torch.Tensor
+            The result of the application of the function to the model variables.
         """
         res = torch.zeros(1)
         for key in self.keys():
@@ -264,6 +419,20 @@ class TensorModel():
     def apply_to_fields(self, func, exclude=[], include=[]):
         """
         Apply the given functional to all model fields.
+
+        Parameters
+        ----------
+        func: function
+            The function to be applied to the model fields.
+        exclude: list (optional)
+            List of keys to exclude from the application of the function.
+        include: list (optional)
+            List of variables to include in the application of the function.
+
+        Returns
+        -------
+        res: torch.Tensor
+            The result of the application of the function to the model fields.
         """
         res = torch.zeros(1)
         for key in self.keys():
@@ -278,6 +447,11 @@ class TensorModel():
         """
         "Frees" the variables that should be adjusted in optimistation.
         (and hence require a gradient.)
+
+        Parameters
+        ----------
+        keys: str or list
+            The key(s) of the variable(s) that should be freed.
         """
         # Make sure that keys are iterable
         if not isinstance(keys, list):
@@ -298,6 +472,11 @@ class TensorModel():
         """
         "Fixes" the variables that should not be adjusted in optimistation.
         (and hence do not require a gradient.)
+
+        Parameters
+        ----------
+        keys: str or list
+            The key(s) of the variable(s) that should be fixed.
         """
         # Make sure that keys are a list
         if not isinstance(keys, list):
@@ -315,7 +494,17 @@ class TensorModel():
             
     def is_field(self, key):
         """
-        Check if the key corresponds to a 1D variable 
+        Check if the key corresponds to a field (i.e. a variable defined at each model element).
+
+        Parameters
+        ----------
+        key: str
+            The key of the variable.
+
+        Returns
+        -------
+        is_field: bool
+            True if the key corresponds to a field, False otherwise.
         """
         return self[key].shape == self.shape
         
@@ -355,6 +544,16 @@ class TensorModel():
         
     @staticmethod
     def print_diff(model_1, model_2):
+        """
+        Print info about the difference between two models.
+
+        Parameters
+        ----------
+        model_1: TensorModel
+            The first model.
+        model_2: TensorModel
+            The second model.
+        """
         print("Variable:                 Min:          Mean:         Max:")
         for key in model_1.keys():
             diff = torch.abs(model_1[key] - model_2[key])
@@ -364,6 +563,11 @@ class TensorModel():
     def save(self, fname):
         """
         Save the TensorModel to disk as an HDF5 file.
+
+        Parameters
+        ----------
+        fname: str
+            The name of the file to which the TensorModel is saved.
         """
         def overwrite_dataset(file, key, data):
             try:
@@ -393,6 +597,16 @@ class TensorModel():
     def load(fname):
         """
         Load a TensorModel from an HDF5 file.
+
+        Parameters
+        ----------
+        fname: str
+            The name of the file from which the TensorModel is loaded.
+
+        Returns
+        -------
+        model: TensorModel
+            The loaded TensorModel
         """
         with h5py.File(fname, "r") as file:
             # Read the shape and sizes
@@ -415,6 +629,14 @@ class TensorModel():
     def interpolate_from_model(self, model, detach=True):
         """
         Interpolate the varialbles of another model into this model.
+
+        Parameters
+        ----------
+        model: TensorModel
+            The model from which to interpolate the variables.
+        detach: bool (optional)
+            If True, the interpolated tensors in this model will be detached
+            from the PyTorch compute graph.
         """
         for key in model.keys():
             if model.is_field(key):
@@ -578,9 +800,21 @@ class TensorModel():
 class SphericalModel:
     """
     Spherically symmetric model.
+    Convenience class to simplify creating spherically symmetic models.
     """
     def __init__(self, rs, model_1D, r_star=0.0):
+        """
+        Constructor for a spherically symmetric model.
 
+        Parameters
+        ----------
+        rs: array_like
+            The radii of the spherical model.
+        model_1D: TensorModel
+            The 1D model for which to construct the spherical model.
+        r_star: float (optional)
+            The radius of the star. (Inner boundary of the spherical model.)
+        """
         self.rs       = rs            # Radii of the spherical model
         self.Nb       = len(rs) - 1   # Number of impact parameters
         self.r_star   = r_star        # Radius of the star
@@ -591,6 +825,21 @@ class SphericalModel:
 
 
     def diff_r(self, arr, rs):
+        """
+        Derivative along the radial direction.
+
+        Parameters
+        ----------
+        arr: torch.Tensor
+            The array for which to compute the derivative.
+        rs: torch.Tensor
+            The radii of the spherical model.
+
+        Returns
+        -------
+        diff_r: torch.Tensor
+            The derivative along the radial direction.
+        """
         # Prepend the one but first and append the one but last.
         # (Such that the first and last difference are the same.)
         ap0 = arr.index_select(dim=0, index=torch.tensor([0]))
@@ -608,27 +857,49 @@ class SphericalModel:
 
 
     def get_velocity(self, model_1D):
+        """
+        Getter for the velocity field.
+        Has to be implemented by the user!
+        """
         raise NotImplementedError('First implement and define get_velocity.')
 
 
     def get_temperature(self, model_1D):
+        """
+        Getter for the temperature distribution.
+        Has to be implemented by the user!
+        """
         raise NotImplementedError('First implement and define get_temperature.')
 
 
     def get_abundance(self, model_1D):
+        """
+        Getter for the abundance distribution.
+        Has to be implemented by the user!
+        """
         raise NotImplementedError('First implement and define get_abundance.')
 
 
     def get_turbulence(self, model_1D):
+        """
+        Getter for the turbulence distribution.
+        Has to be implemented by the user!
+        """
         raise NotImplementedError('First implement and define get_turbulence.')
 
 
     def get_boundary_condition(self, model_1D, frequency, b):
+        """
+        Getter for the boundary condition at the impact parameter b.
+        Has to be implemented by the user!
+        """
         raise NotImplementedError('First implement and define get_boundary_condition.')
 
 
     def image_ray_tracer(self):
-
+        """
+        Ray tracer for the spherical model.
+        """
         # Initialise lists that will contain results
         self.dZss = []   # Distance increments along th ray
         self.idss = []   # Grid point indices along the ray
@@ -663,18 +934,31 @@ class SphericalModel:
                 self.diss.append(torch.from_numpy(dis[::-1][mask]))
 
 
-    def image(self, lines, frequencies, r_max=np.inf):
+    def image(self, lines, frequencies, r_max=np.inf, step=5):
         """
-        Forward model with analytic velocity and temperature profiles.
+        Create synthetic image of the given spherically symmetric model.
+
+        Parameters
+        ----------
+        lines: list
+            List of Line objects for which to create the synthetic image.
+        frequencies: list
+            List of frequencies at which to compute the synthetic image.
+        r_max: float (optional)
+            Maximum radius at which to compute the synthetic image.
+        step: int (optional)
+            Step size for the impact parameters at which to trace a ray.
+
+        Returns
+        -------
+        Iss: torch.Tensor
+            The synthetic image of the model.
         """
         # Extract the model parameters
         velocity    = self.get_velocity   (self.model_1D)
         abundance   = self.get_abundance  (self.model_1D)
         temperature = self.get_temperature(self.model_1D)
         turbulence  = self.get_turbulence (self.model_1D)
-
-        step = 5
-
 
         # Tensor for the intensities in each line
         Iss = torch.zeros((len(lines), len(frequencies[0])), dtype=torch.float64)
@@ -746,33 +1030,74 @@ class GeneralModel:
     """
     General model class.
     """
-    def __init__(self, model):        
+    def __init__(self, model):
+        """
+        Constructor for a general model.
+
+        Parameters
+        ----------
+        model: TensorModel
+            The model for which to create the general model.
+        """
         self.model = model
 
 
     def get_velocity(self, model):
+        """
+        Getter for the velocity field.
+        Has to be implemented by the user!
+        """
         raise NotImplementedError('First implement and define get_velocity.')
 
 
     def get_temperature(self, model):
+        """
+        Getter for the temperature distribution.
+        Has to be implemented by the user!
+        """
         raise NotImplementedError('First implement and define get_temperature.')
 
 
     def get_abundance(self, model, l):
+        """
+        Getter for the abundance distribution (for the line produce species of line l).
+        Has to be implemented by the user!
+        """
         raise NotImplementedError('First implement and define get_abundance.')
 
 
     def get_turbulence(self, model):
+        """
+        Getter for the turbulence distribution.
+        Has to be implemented by the user!
+        """
         raise NotImplementedError('First implement and define get_turbulence.')
 
 
     def get_boundary_condition(self, model, frequency):
+        """
+        Getter for the boundary condition.
+        Has to be implemented by the user!
+        """
         raise NotImplementedError('First implement and define get_boundary_condition.')
 
 
     # Forward model
     def image(self, lines, frequencies):
+        """
+        Create synthetic image of the given general model.
 
+        Parameters
+        ----------
+        lines: list
+            List of Line objects for which to create the synthetic image.
+        frequencies: list
+
+        Returns
+        -------
+        Iss: torch.Tensor
+            The synthetic image of the model.
+        """
         # Tensor for the intensities in each line
         imgs = torch.zeros((len(lines), self.model.shape[0], self.model.shape[1], len(frequencies[0])), dtype=torch.float64)
 

@@ -4,11 +4,29 @@ from astroquery.simbad   import Simbad
 
 
 class AstroObject():
-   
+    """
+    Class to store data about an astrophysical object,
+    such as distance, radial velocity, and sky coordinates.
+    """
+
     @units.quantity_input(distance='length', radial_velocity='velocity')
     def __init__(self, name, distance=None, radial_velocity=None):
         """
         Constructor for AstroObject.
+
+        Parameters
+        ----------
+        name : str
+            Name of the astrophysical object.
+        distance : astropy.units.quantity.Quantity object, optional
+            Distance to the astrophysical object.
+        radial_velocity : astropy.units.quantity.Quantity object, optional
+            Radial velocity of the astrophysical object.
+
+        Raises
+        ------
+        RuntimeError
+            If the object name is not found in the SIMBAD database.
         """
         # Set name
         self.name = name
@@ -39,6 +57,16 @@ class SimbadGetter():
     def __init__(self, name: str):
         """
         Constructor for Simbad getter class.
+
+        Parameters
+        ----------
+        name : str
+            Name of the astrophysical object.
+
+        Raises
+        ------
+        RuntimeError
+            If the object name is not found in the SIMBAD database.
         """
         # Store the object name.
         self.name = name
@@ -57,14 +85,13 @@ class SimbadGetter():
     def get_distance(self):
         """
         Getter for the distance to the astrophysical object, using Simbad.
+        Code adapted from:
+        https://gist.github.com/elnjensen/ce2367faf0d876def1ff68b6154e102b
 
         Returns
         -------
         dist : astropy.units.quantity.Quantity object
             Distance to astrophysical object, from Simbad.
-
-        Code adapted from:
-        https://gist.github.com/elnjensen/ce2367faf0d876def1ff68b6154e102b
         """
         # Extract parallax
         plx = self.sim['PLX_VALUE']
@@ -96,6 +123,11 @@ class SimbadGetter():
         -------
         velo : astropy.units.quantity.Quantity object
              Radial velocity of the astrophysical object, from Simbad.
+
+        Raises
+        ------
+        RuntimeError
+            If the object has no radial velocity in the SIMBAD database.
         """
         # Extract radial velocity
         vel = self.sim['RV_VALUE']

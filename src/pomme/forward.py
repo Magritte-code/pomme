@@ -2,6 +2,25 @@ import torch
 
 
 def image_along_last_axis(src, dtau, tau, img_bdy):
+    """
+    Create syntehtic image along the last data axis.
+
+    Parameters
+    ----------
+    src : torch.Tensor
+        Source function for the radiation transport equation.
+    dtau : torch.Tensor
+        Optical depth difference between two consequtive points.
+    tau : torch.Tensor
+        Optical depth.
+    img_bdy : torch.Tensor
+        Boundary condition for the image.
+
+    Returns
+    -------
+    img : torch.Tensor
+        Synthetic image along the last axis.
+    """
     
     # Check dimensionality of the input
     assert src.dim() == tau.dim()-1, "Tensor src should only have spatial dimensions, no frequency!"
