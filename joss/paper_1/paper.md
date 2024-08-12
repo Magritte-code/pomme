@@ -45,23 +45,24 @@ aas-journal: Astrophysical Journal Supplement Series
 
 
 # Summary
-The [pomme]{.sc} Python package allows users to reconstruct 1D spherically symmetric or 3D models of physical and chemical parameters, based on astronomical spectral line observations.
-Typical parameters that can be reconstructed are the abundance, velocity, and temperature distributions. 
-
-A typical problem in astronomy is that for most of our observations we are restricted to the plane of the sky.
-As a result, these observations are always mere projections containing only partial information about the distribution of the physical properties of the observed object.
-Luckily, in some frequency bands of the electromagnetic spectrum, the observed media are optically thin, such that we receive radiation from the entire medium along the line of sight, and thus we can, at least in principle, extract information from it.
+A typical problem in astronomy is that, for most of our observations, we are restricted to the plane of the sky.
+As a result, these observations are always mere projections containing only partial information about the observed object.
+Luckily, some frequency bands of the electromagnetic spectrum are optically thin, such that we receive radiation from the entire medium along the line of sight.
+This means that, at least in principle, from the observed radiation, we can extract information about the physical and chemical conditions along the entire line of sight.
 This is especially the case for spectral line radiation caused by transitions between the quantized energy levels of atoms and molecules in the medium.
-In particular, we will focus on rotational transition lines which are excited in many astrophysical environments and can easily be resolved individually.
-Using these spectral line observations, we can reconstruct models of physical and chemical parameters, such as abundance, velocity, and temperature distributions.
-
-
-# Background
+Rotational transition lines are particularly interesting, since they are excited in many astrophysical environments and can easily be resolved individually.
+Using spectral line observations, we can infer information about physical and chemical parameters, such as abundance of certain molecules, velocity, and temperature distributions.
+To facilitate this, we built the [pomme]{.sc} Python package that helps users reconstruct 1D spherically symmetric or generic 3D models, based on astronomical spectral line observations.
+A detailed description and validation of the methods can be found in [@DeCeuster:2024].
 
 
 # Statement of need
+Spectral line observations are indispensible in astronomy.
+Many line radiation transport solvers exist to solve the (forward) problem of determining what spectral line observations of a certain model would look like [see e.g. @DeCeuster:2022].
+However, far fewer tools exist to efficiently sovle the inverse problem of determining what model could correspond to certain spectral line observations.
 
-Spectral line observations are indispensible in astronomy, as they can be used to infer the chemical composition as well as the physical properties of astrophysical objects.
+
+
 
 [@DeCeuster:2022]
 
