@@ -52,12 +52,12 @@ This is especially the case for spectral line radiation caused by transitions be
 Rotational transition lines are particularly interesting, since they are excited in many astrophysical environments and can easily be resolved individually.
 Using spectral line observations, we can infer information about physical and chemical parameters, such as abundance of certain molecules, velocity, and temperature distributions.
 To facilitate this, we built the [pomme]{.sc} Python package that helps users reconstruct 1D spherically symmetric or generic 3D models, based on astronomical spectral line observations.
-A detailed description and validation of the methods can be found in [@DeCeuster:2024].
+A detailed description and validation of the methods can be found in [@DeCeuster2024].
 
 
 # Statement of need
 Spectral line observations are indispensible in astronomy.
-Many line radiation transport solvers exist to solve the (forward) problem of determining what spectral line observations of a certain model would look like [see e.g. @DeCeuster:2022].
+Many line radiation transport solvers exist to solve the (forward) problem of determining what spectral line observations of a certain model would look like [see e.g. @DeCeuster2022].
 However, far fewer tools exist to efficiently sovle the inverse problem of determining what model could correspond to certain spectral line observations.
 
 
