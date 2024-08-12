@@ -24,8 +24,7 @@ authors:
     affiliation: "4"
 
 affiliations:
- - name: Institute of Astronomy, Department of Physics & Astronomy, KU Leuven,
-Celestijnenlaan 200D, 3001 Leuven, Belgium
+ - name: Institute of Astronomy, Department of Physics & Astronomy, KU Leuven, Celestijnenlaan 200D, 3001 Leuven, Belgium
    index: 1
  - name: School of Physics \& Astronomy, Monash University, Clayton, Victoria, Australia
    index: 2
@@ -64,9 +63,9 @@ However, far fewer tools exist to efficiently sovle the inverse problem of deter
 
 
 
-[@DeCeuster:2022]
+<!-- [@DeCeuster:2022] -->
 
-
+<!-- 
 Recent high-resolution observations exposed the intricate and intrinsically 3D
 morphologies of stellar winds around evolved stars [@Decin:2020]. The sheer amount of complexity that is
 observed, makes it difficult to interpret the observations and necessitates the use of
@@ -79,7 +78,7 @@ appear in observations. This can be achieved, by creating synthetic observations
 with Magritte.
 Examples and analytic as well as cross-code benchmarks can be found in the documentation and in [@DeCeuster:2019; @DeCeuster:2020].
 
-![Example of a synthetic observation of the CO($v=0$, $J=1-0$) transition, created with Magritte for a hydrodynamics model of an asymptotic giant branch (AGB) star, as it is perturbed by a companion [this is model \textsc{v10e50} in @Malfait:2021]. \label{fig:example}](example.png)
+![Example of a synthetic observation of the CO($v=0$, $J=1-0$) transition, created with Magritte for a hydrodynamics model of an asymptotic giant branch (AGB) star, as it is perturbed by a companion [this is model \textsc{v10e50} in @Malfait:2021]. \label{fig:example}](example.png) -->
 
 
 <!-- # Method
