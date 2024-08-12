@@ -8,11 +8,6 @@ from pomme.observation import Observation, DataCube, Beam
 this_folder = path.dirname(path.abspath(__file__))
 
 
-def test_constructor():
-    
-    obs = Observation()
-
-
 def test_torch_vs_numpy_beam_kernel():
     # Read the data cube
     data = DataCube(f'{this_folder}/data/header_only.fits')
