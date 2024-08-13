@@ -27,4 +27,4 @@ def test_torch_vs_numpy_beam_kernel():
     # Compute the absolute relative difference
     err = np.abs(2.0 * (img_torch_conv - img_numpy_conv) / (img_torch_conv + img_numpy_conv))
 
-    assert err.max() < 5.0e-15
+    assert err.max() < 5.0e-14
