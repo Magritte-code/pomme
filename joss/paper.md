@@ -64,11 +64,11 @@ Therefore, in [pomme]{.sc}, we have implemented the forwad problem of line radia
 
 
 # Example
-Figure \autoref{fig:example} shows an application of [pomme]{.sc}, where it was used to reconstruct the 3D abundance distribution of NaCl (table salt) around the evolved star IK Tauri.
+\autoref{fig:example} shows an application of [pomme]{.sc}, where it was used to reconstruct the abundance distribution of NaCl (table salt) around the evolved star IK Tauri.
 The reconstruction is based on observations of the NaCl ($J=26-25$) rotational line, taken with the Atacama Large (sub)Millimetre Array (ALMA).
-The original analysis of this data was done by @Coenegrachts2023, and we improved their methods using [pomme]{.sc} as described in @DeCeuster2024.
+The original analysis was done by @Coenegrachts2023, and we improved their methods using [pomme]{.sc} as described in @DeCeuster2024.
 
-![3D reconstruction of the NaCl abundance distribution around the evolved star IK Tauri, created with [pomme]{.sc}. An interactive version of the figure is available in [the documentation](https://pomme.readthedocs.io/en/latest/_static/NaCl_reconstruction.html) \label{fig:example}](IKTau_NaCl.png)
+![Reconstruction of the NaCl abundance distribution around the evolved star IK Tauri, created with [pomme]{.sc}. An interactive version of the figure is available in the [documentation](https://pomme.readthedocs.io/en/latest/_static/NaCl_reconstruction.html). \label{fig:example}](IKTau_NaCl.png)
 
 
 
