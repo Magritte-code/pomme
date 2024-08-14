@@ -18,7 +18,7 @@ As a result, given a good model for the line formation process and an inversion 
 Currently, we mainly focus on retrieving the distributions of the abundance of the chemical species producing the line, the velocity field, and its kinetic temperature.
 However, also other parameters can be retrieved.
 
-More information about the model for [spectral line formation](https://pomme.readthedocs.io/en/latest/background/spectral_line_formation.html) and the [probabilistic reconstruction methods](https://pomme.readthedocs.io/en/latest/background/probabilistic_reconstruction.html) can be found in the [background](https://pomme.readthedocs.io/en/latest/background/index.html) pages.
+More information about the model, our methods, and their implementation can be found in [De Ceuster et al. 2024](https://ui.adsabs.harvard.edu/abs/2024arXiv240218525D/abstract).
 
 *pomme* is built on top of [PyTorch](https://pytorch.org) and benefits a lot from functionality provided by [Astropy](https://www.astropy.org).
 It is currently developed and maintained by [Frederik De Ceuster](https://freddeceuster.github.io) at [KU Leuven](https://www.kuleuven.be/english/kuleuven/index.html).
