@@ -7,7 +7,8 @@ tags:
   - radiative transfer
 
 authors:
-  - name: Frederik De Ceuster^[Corresponding author.]
+  - firstname: Frederik
+    surname: De Ceuster^[Corresponding author.]
     orcid: 0000-0001-5887-8498
     affiliation: "1" # (Multiple affiliations must be quoted)
   - name: Thomas Ceulemans
