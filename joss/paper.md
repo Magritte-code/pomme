@@ -58,19 +58,20 @@ A detailed description and validation of the methods can be found in [@DeCeuster
 
 # Statement of need
 Spectral line observations are indispensible in astronomy.
-As a result, many line radiation transport solvers exist to solve the (forward) problem of determining what spectral line observations of a certain model would look like [see e.g. @DeCeuster2022, @Matsumoto2023].
-However, far fewer tools exist to efficiently sovle the more pressing inverse problem of determining what model could correspond to certain observations.
-Although one can use existing forward solvers to iteratively solve the inverse problem, the resulting process is often slow, cumbersome, and leaves, much room for improvement [see e.g. @Coenegrachts2023, @Danilovich2024].
-Therefore, in [pomme]{.sc}, we have implemented the forwad problem of line radiative transfer in the [PyTorch]{.sc} framework [@Paszke2019] to leverage the [autograd]{.sc} functionality [@Paszke2017], which allows us to efficiently solve the inverse problem in a streamlined way.
+As a result, many line radiation transport solvers exist to solve the (forward) problem of determining what spectral line observations of a certain model would look like [@DeCeuster2022; @Matsumoto2023].
+However, far fewer tools exist to efficiently solve the more pressing inverse problem of determining what model could correspond to certain observations, commonly referred to as fitting our models to observtions.
+Although one can use existing forward solvers to iteratively solve the inverse problem, the resulting process is often slow, cumbersome, and leaves, much room for improvement [@Coenegrachts2023; @Danilovich2024].
+Therefore, in [pomme]{.sc}, we have implemented a line radiative transfer solver (the forward problem) in the [PyTorch]{.sc} framework [@Paszke2019] to leverage the [autograd]{.sc} functionality [@Paszke2017] to efficiently fit our models to the observations (the inverse problem) in a streamlined way [@DeCeuster2024].
 
 
 # Example
 \autoref{fig:example} shows an application of [pomme]{.sc}, where it was used to reconstruct the abundance distribution of NaCl (table salt) around the evolved star IK Tauri.
-The reconstruction is based on observations of the NaCl ($J=26-25$) rotational line, taken with the Atacama Large (sub)Millimetre Array (ALMA).
+The reconstruction is based on observations of the NaCl ($J=26-25$) rotational line, taken with the Atacama Large (sub)Millimetre Array (ALMA), shown in \autoref{fig:example_obs}.
 The original analysis was done by @Coenegrachts2023, and we improved their methods using [pomme]{.sc} as described in @DeCeuster2024.
 
 ![Reconstruction of the NaCl abundance distribution around the evolved star IK Tauri, created with [pomme]{.sc}. An interactive version of the figure is available in the [documentation](https://pomme.readthedocs.io/en/latest/_static/NaCl_reconstruction.html). \label{fig:example}](IKTau_NaCl.png)
 
+![NaCl ($J=26-25$) rotational line observations, taken with the Atacama Large (sub)Millimetre Array (ALMA), used as input in [pomme]{.sc}. \label{fig:example_obs}](IKTau_NaCl_obs.png)
 
 
 # Acknowledgements
