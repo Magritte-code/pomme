@@ -71,7 +71,7 @@ The original analysis was done by @Coenegrachts2023, and we improved their metho
 
 ![Reconstruction of the NaCl abundance distribution around the evolved star IK Tauri, created with [pomme]{.sc}. An interactive version of the figure is available in the [documentation](https://pomme.readthedocs.io/en/latest/_static/NaCl_reconstruction.html). \label{fig:example}](IKTau_NaCl.png)
 
-![NaCl ($J=26-25$) rotational line observations, taken with the Atacama Large (sub)Millimetre Array (ALMA), used as input in [pomme]{.sc}. \label{fig:example_obs}](IKTau_NaCl_obs.png)
+![NaCl ($J=26-25$) rotational line observations, taken with the Atacama Large (sub)Millimetre Array (ALMA), which is used as input in [pomme]{.sc} to create a reconstruction. \label{fig:example_obs}](IKTau_NaCl_obs.png)
 
 
 # Acknowledgements
