@@ -30,7 +30,7 @@ Get the latest release (version 0.0.17) either from [PyPI](https://pypi.org/proj
 ```
 pip install pomme
 ```
-or from [Anaconda.org](https://anaconda.org/FredDeCeuster/pomme) (only linux-64 and osx-64), using `conda`, with:
+or from [Anaconda.org](https://anaconda.org/FredDeCeuster/pomme) (only linux-64 and osx-intel-64), using `conda`, with:
 ```
 conda install -c freddeceuster pomme 
 ```
