@@ -1,12 +1,12 @@
 package:
   name: pomme
-  version: "0.0.16"
+  version: "0.0.17"
 
 about:
   home: "https://github.com/Magritte-code/pomme"
   license: GPLv3
   license_file: LICENSE
-  summary: Probabilistic 3D Reconstruction of Spectral Line Observations.
+  summary: Bayesian 3D Reconstruction of Spectral Line Observations.
 
 requirements:
   build:
