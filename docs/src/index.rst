@@ -34,7 +34,7 @@ It is currently developed and maintained by `Frederik De Ceuster <https://fredde
 Installation
 ************
 
-Get the latest release (version 0.0.16) either from `PyPI <https://pypi.org/project/pomme/>`_, using pip, with:
+Get the latest release (version 0.1.0) either from `PyPI <https://pypi.org/project/pomme/>`_, using pip, with:
 
 .. code-block:: shell
 
