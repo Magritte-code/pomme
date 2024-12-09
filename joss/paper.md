@@ -54,7 +54,7 @@ This is especially the case for spectral line radiation caused by transitions be
 Rotational transition lines are particularly interesting, since they are excited in many astrophysical environments and can easily be resolved individually.
 Using spectral line observations, we can infer information about physical and chemical parameters, such as abundance of certain molecules, velocity, and temperature distributions.
 To facilitate this, we built a Python package, called pomme, that helps users reconstruct 1D spherically symmetric or generic 3D models, based on astronomical spectral line observations.
-A detailed description and validation of the methods can be found in [@DeCeuster2024].
+A detailed description and validation of the methods can be found in @DeCeuster2024.
 
 
 # Statement of need
