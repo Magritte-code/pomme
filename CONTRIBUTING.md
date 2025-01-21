@@ -23,7 +23,7 @@ For bug fixes or smaller contributions, we gladly accept pull requests (see belo
 
 ## Creating pull requests
 
-The advised procedure for creating pull requests for Magritte goes as follows:
+The advised procedure for creating pull requests for pomme goes as follows:
 
 - Fork the pomme GitHub repository and create a new branch for your work;
 - Add your changes and commit them;
