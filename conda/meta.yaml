@@ -1,6 +1,6 @@
 package:
   name: pomme
-  version: "0.1.0"
+  version: "0.2.0"
 
 about:
   home: "https://github.com/Magritte-code/pomme"

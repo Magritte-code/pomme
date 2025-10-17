@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pomme"
-version = "0.1.0"
+version = "0.2.0"
 description = "Probabilistic 3D Reconstruction of Spectral Line Observations."
 readme = "README.md"
 authors = [{ name = "Frederik De Ceuster", email = "frederik.deceuster@gmail.com" }]
@@ -40,7 +40,7 @@ dev = ["black", "bumpver", "pip-tools", "pytest"]
 Homepage = "https://github.com/Magritte-code/pomme"
 
 [tool.bumpver]
-current_version = "0.1.0"
+current_version = "0.2.0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message  = "Bump version {old_version} -> {new_version}"
 commit          = true
