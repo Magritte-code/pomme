@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
         
     # Do not ignore bash profile files. From:
     # https://github.com/marketplace/actions/setup-miniconda
@@ -35,7 +35,7 @@ jobs:
 
       - name: Conda setup (try 1)
         id: setup_try1
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-variant: Mambaforge
           mamba-version: "*"
@@ -45,7 +45,7 @@ jobs:
       - name: Conda setup (try 2)
         id: setup_try2
         if: steps.setup_try1.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-variant: Mambaforge
           mamba-version: "*"
@@ -55,7 +55,7 @@ jobs:
       - name: Conda setup (try 3)
         id: setup_try3
         if: steps.setup_try2.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-variant: Mambaforge
           mamba-version: "*"
