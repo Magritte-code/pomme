@@ -31,7 +31,7 @@ def planck(temperature, frequency):
     c  = constants.c  .si.value
     kb = constants.k_B.si.value
     # Return planck function
-    return 2.0*h/c**2 * np.power(frequency, 3) / np.expm1(h*frequency/(kb*temperature))
+    return 2.0*h/c**2 * torch.pow(frequency, 3) / torch.expm1(h*frequency/(kb*temperature))
 
 
 def print_var(name, var):
